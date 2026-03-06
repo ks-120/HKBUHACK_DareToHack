@@ -177,10 +177,6 @@ function mustHaveMultiplier(mine: UserProfile, other: UserProfile): number {
       case 'Similar major / courses':
         if (mine.faculty && other.faculty && mine.faculty === other.faculty) satisfied++
         break
-      case 'Same year / Living nearby':
-        if (other.yearOfStudy === mine.yearOfStudy) satisfied++
-        else if (other.livingSituation === mine.livingSituation) satisfied += 0.5
-        break
       case 'Shared hobbies / interests':
         if (interestSim(mine, other) > 0.3) satisfied++
         break

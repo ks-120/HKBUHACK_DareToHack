@@ -155,6 +155,7 @@
 }
 .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%; height: 6px; border-radius: 3px;
   background: #dde3f0; outline: none; cursor: pointer;
   accent-color: #1a3a8f;
