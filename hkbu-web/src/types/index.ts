@@ -113,6 +113,7 @@ export interface UserProfile {
   // Fun extras
   bio?: string
   icebreaker?: string
+  points?: number
 }
 
 export interface Post {

@@ -92,6 +92,9 @@ export default function MainPage() {
           <h1 className={s.greeting}>Hey {profile?.nickname ?? '…'} 👋</h1>
           <p className={s.greetingSub}>Welcome back to HKBU Buddy</p>
         </div>
+        {profile?.points != null && profile.points > 0 && (
+          <div className={s.pointsBadge}>🏅 {profile.points} pts</div>
+        )}
       </div>
 
       {/* ── News ticker ── */}

@@ -95,7 +95,7 @@ export default function MatchPage() {
       <button className={s.backBtn} onClick={() => nav('/main')}>← Back</button>
       <h2 className={s.pageTitle}>Match a Buddy 🤝</h2>
       <p className={s.pageSub}>
-        Ranked by interests, study style, personality, goals &amp; 
+        Ranked by interests, study style, personality &amp; buddy goals
       </p>
 
       {loading ? (

@@ -1,169 +1,209 @@
 /* ── Sidebar ── */
 .sidebar {
-  width: 240px;
+  width: 248px;
   min-height: 100vh;
-  background: var(--accent);
-  border-right: none;
+  background: linear-gradient(180deg, #0d2760 0%, #1a3a8f 100%);
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
+  padding: 20px 14px;
   position: fixed;
   left: 0; top: 0; bottom: 0;
   z-index: 50;
-  box-shadow: 4px 0 24px rgba(13,39,96,0.13);
+  box-shadow: 4px 0 32px rgba(13,39,96,0.18);
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 /* Logo */
 .logo {
   display: flex; align-items: center; gap: 12px;
-  padding: 0 8px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  margin-bottom: 20px;
+  padding: 4px 8px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 16px;
 }
-.logoEmoji { font-size: 32px; }
-.logoText {
-  font-size: 16px; font-weight: 800; color: #fff; line-height: 1.3;
-}
-.logoText span { color: var(--gold); }
+.logoEmoji { font-size: 30px; filter: drop-shadow(0 2px 6px rgba(245,166,35,0.35)); }
+.logoText { font-size: 15px; font-weight: 800; color: #fff; line-height: 1.3; letter-spacing: -0.2px; }
+.logoText span { color: #f5a623; }
 
 /* User card */
 .userCard {
   display: flex; align-items: center; gap: 10px;
-  background: rgba(255,255,255,0.10); border-radius: 12px;
-  padding: 12px; margin-bottom: 24px;
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 14px;
+  padding: 11px 12px; margin-bottom: 20px;
+  transition: background 0.15s;
+  cursor: pointer;
 }
+.userCard:hover { background: rgba(255,255,255,0.14); }
 .userAvatar {
   width: 38px; height: 38px; border-radius: 50%;
-  background: var(--gold); color: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; flex-shrink: 0;
+  background: linear-gradient(135deg, #f5a623, #f47c20);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(245,166,35,0.35);
 }
 
 /* Real photo variant */
 .userAvatarImg {
   width: 38px; height: 38px; border-radius: 50%;
   object-fit: cover; flex-shrink: 0;
-  border: 2px solid var(--gold);
+  border: 2px solid #f5a623;
+  box-shadow: 0 2px 8px rgba(245,166,35,0.25);
 }
 
 .userInfo { overflow: hidden; }
 .userName {
-  color: #fff; font-size: 14px; font-weight: 700;
+  color: #fff; font-size: 13px; font-weight: 700;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .userEmail {
-  color: rgba(255,255,255,0.6); font-size: 11px;
+  color: rgba(255,255,255,0.5); font-size: 11px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 /* Nav */
-.nav {
-  display: flex; flex-direction: column; gap: 4px; flex: 1;
-}
+.nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
 .navItem {
   display: flex; align-items: center; gap: 12px;
-  padding: 11px 14px; border-radius: 10px;
-  background: none; color: rgba(255,255,255,0.65);
+  padding: 11px 14px; border-radius: 12px;
+  background: none; color: rgba(255,255,255,0.60);
   font-size: 14px; font-weight: 500;
-  transition: background .15s, color .15s;
+  transition: background 0.15s, color 0.15s, transform 0.12s;
   text-align: left; width: 100%;
   position: relative;
 }
-.navItem:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.navActive {
-  background: var(--gold) !important;
-  color: var(--accent) !important;
-  font-weight: 700;
+.navItem:hover {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  transform: translateX(3px);
 }
-.navEmoji { font-size: 18px; width: 24px; text-align: center; }
+.navActive {
+  background: rgba(245,166,35,0.18) !important;
+  color: #f5a623 !important;
+  font-weight: 700;
+  border: 1px solid rgba(245,166,35,0.28);
+}
+.navActive::before {
+  content: '';
+  position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%;
+  background: #f5a623;
+  border-radius: 0 3px 3px 0;
+}
+.navEmoji { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
 .navLabel { font-size: 14px; }
 
-/* ── Unread badge on nav item ── */
+/* Unread badge */
 .unreadBadge {
   margin-left: auto;
-  background: var(--accent2); color: #fff;
-  font-size: 10px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent2), #e8620a);
+  color: #fff; font-size: 10px; font-weight: 800;
   min-width: 18px; height: 18px; border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
-  padding: 0 4px;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(244,124,32,0.3);
+  animation: pulseBadge 2s infinite;
+}
+@keyframes pulseBadge {
+  0%,100% { box-shadow: 0 0 0 0 rgba(244,124,32,0.4); }
+  50%      { box-shadow: 0 0 0 4px rgba(244,124,32,0); }
 }
 
-/* ── AI Chat nav item special styling ── */
+/* AI Chat nav item */
 .navAI {
-  background: rgba(244, 124, 32, 0.12) !important;
-  border: 1px solid rgba(244, 124, 32, 0.25);
+  background: rgba(244,124,32,0.10) !important;
+  border: 1px solid rgba(244,124,32,0.22);
   color: #f5a623 !important;
 }
 .navAI:hover {
-  background: rgba(244, 124, 32, 0.22) !important;
+  background: rgba(244,124,32,0.20) !important;
   color: #f5a623 !important;
 }
-
 .aiBadge {
   margin-left: auto;
   background: linear-gradient(135deg, #f47c20, #f5a623);
-  color: #fff;
-  font-size: 9px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 6px;
-  letter-spacing: .4px;
+  color: #fff; font-size: 9px; font-weight: 800;
+  padding: 2px 7px; border-radius: 6px; letter-spacing: .4px;
+}
+
+/* Divider */
+.navDivider {
+  height: 1px; background: rgba(255,255,255,0.08);
+  margin: 8px 0;
 }
 
 /* Sign out */
 .signOutBtn {
   display: flex; align-items: center; gap: 12px;
-  padding: 11px 14px; border-radius: 10px;
-  background: none; color: rgba(255,255,255,0.7);
+  padding: 11px 14px; border-radius: 12px;
+  background: none; color: rgba(255,255,255,0.55);
   font-size: 14px; font-weight: 600;
-  transition: background .15s, color .15s;
-  margin-top: 8px; width: 100%;
+  transition: background 0.15s, color 0.15s;
+  margin-top: 6px; width: 100%;
 }
-.signOutBtn:hover { background: rgba(244,124,32,0.25); color: var(--accent2); }
+.signOutBtn:hover {
+  background: rgba(244,124,32,0.15);
+  color: #f5a623;
+}
 .signOutBtn span:first-child { font-size: 18px; width: 24px; text-align: center; }
 
 /* ── Layout wrapper ── */
-.appShell {
-  display: flex; min-height: 100vh;
-}
+.appShell { display: flex; min-height: 100vh; }
 .mainContent {
-  margin-left: 240px;
-  flex: 1;
-  min-height: 100vh;
+  margin-left: 248px;
+  flex: 1; min-height: 100vh;
   background: var(--bg);
+  transition: margin-left 0.25s;
 }
 
-/* ── Mobile ── */
+/* ── Mobile — Instagram bottom tab bar ── */
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%; height: 64px; min-height: unset;
+    width: 100%; height: 62px; min-height: unset;
     top: unset; bottom: 0; left: 0; right: 0;
     flex-direction: row; align-items: center;
-    padding: 0 8px;
-    border-right: none; border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 0 4px;
+    border-right: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 -4px 20px rgba(13,39,96,0.15);
+    background: linear-gradient(180deg, #1a3a8f 0%, #0d2760 100%);
   }
-  .logo { display: none; }
-  .userCard { display: none; }
+  .logo, .userCard { display: none; }
+  .navDivider { display: none; }
   .nav {
     flex-direction: row; flex: 1;
     justify-content: space-around; gap: 0;
   }
   .navItem {
-    flex-direction: column; gap: 2px;
+    flex-direction: column; gap: 3px;
     padding: 6px 4px; font-size: 10px;
     align-items: center; justify-content: center;
+    border-radius: 10px; transform: none !important;
   }
-  .navEmoji { font-size: 20px; width: auto; }
+  .navItem:hover { background: rgba(255,255,255,0.12); transform: none !important; }
+  .navActive {
+    background: rgba(245,166,35,0.15) !important;
+    border: none;
+  }
+  .navActive::before { display: none; }
+  .navEmoji { font-size: 21px; width: auto; }
   .navLabel { font-size: 10px; }
+  .unreadBadge {
+    position: absolute; top: 4px; right: 4px;
+    margin-left: 0; width: 16px; height: 16px; font-size: 9px;
+  }
   .signOutBtn {
-    flex-direction: column; gap: 2px;
+    flex-direction: column; gap: 3px;
     padding: 6px 4px; font-size: 10px;
     align-items: center; justify-content: center; margin-top: 0;
+    border-radius: 10px;
   }
-  .signOutBtn span:first-child { font-size: 20px; width: auto; }
+  .signOutBtn span:first-child { font-size: 21px; width: auto; }
   .mainContent {
     margin-left: 0;
-    margin-bottom: 64px;
+    margin-bottom: 62px;
   }
 }

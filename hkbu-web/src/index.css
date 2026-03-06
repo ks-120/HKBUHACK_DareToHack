@@ -1,26 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --bg:       #f5f7ff;
   --bg2:      #ffffff;
   --bg3:      #e8ecf8;
-  --accent:   #0d2760;        /* deep blue */
-  --accent2:  #f47c20;        /* yellow-orange */
-  --accent3:  #1a3a8f;        /* mid blue */
-  --gold:     #f5a623;        /* amber-yellow */
+  --accent:   #0d2760;
+  --accent2:  #f47c20;
+  --accent3:  #1a3a8f;
+  --gold:     #f5a623;
   --text:     #0d2760;
   --text2:    #5a6a99;
   --text3:    #2e3f6e;
   --border:   #d4daf0;
   --radius:   14px;
-  --shadow:   0 4px 24px rgba(13,39,96,0.10);
+  --shadow:   0 2px 12px rgba(13,39,96,0.08);
+  --shadow-lg: 0 8px 32px rgba(13,39,96,0.13);
+  --shadow-xl: 0 16px 48px rgba(13,39,96,0.18);
+  --transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
 }
 
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root { min-height: 100vh; }
@@ -34,11 +43,79 @@ button {
   outline: none;
 }
 
-input, textarea {
+button:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}
+
+input, textarea, select {
   font-family: inherit;
   outline: none;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+
+/* ── Global micro-animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.92); }
+  70%  { transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animFadeIn    { animation: fadeIn .3s ease both; }
+.animFadeInUp  { animation: fadeInUp .35s ease both; }
+.animScaleIn   { animation: scaleIn .25s ease both; }
+.animFloat     { animation: float 3s ease-in-out infinite; }
+
+/* ── Skeleton loader ── */
+.skeleton {
+  background: linear-gradient(90deg, #e8ecf8 25%, #f5f7ff 50%, #e8ecf8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
