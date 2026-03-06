@@ -89,6 +89,28 @@
   padding: 0 4px;
 }
 
+/* ── AI Chat nav item special styling ── */
+.navAI {
+  background: rgba(244, 124, 32, 0.12) !important;
+  border: 1px solid rgba(244, 124, 32, 0.25);
+  color: #f5a623 !important;
+}
+.navAI:hover {
+  background: rgba(244, 124, 32, 0.22) !important;
+  color: #f5a623 !important;
+}
+
+.aiBadge {
+  margin-left: auto;
+  background: linear-gradient(135deg, #f47c20, #f5a623);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: .4px;
+}
+
 /* Sign out */
 .signOutBtn {
   display: flex; align-items: center; gap: 12px;

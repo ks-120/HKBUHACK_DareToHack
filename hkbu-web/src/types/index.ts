@@ -199,3 +199,53 @@ export interface ChatMeta {
   lastAt: number
   [key: string]: unknown
 }
+
+export interface StudySession {
+  id: string
+  chatId: string
+  proposedBy: string
+  proposedByNickname: string
+  withUid: string
+  withNickname: string
+  date: string
+  time: string
+  location: string
+  subject: string
+  status: 'pending' | 'accepted' | 'declined' | 'done'
+  createdAt: number
+}
+
+export interface HelpPost {
+  id: string
+  uid: string
+  nickname: string
+  photoURL?: string
+  type: 'need' | 'offer'
+  subject: SubjectStrength
+  detail: string
+  resolved: boolean
+  createdAt: number
+}
+
+export interface Community {
+  id: string
+  name: string
+  description: string
+  emoji: string
+  category: 'Study' | 'Hobby' | 'Faculty' | 'Buddy Hunt' | 'Wellness' | 'Other'
+  createdBy: string
+  createdByNickname: string
+  memberCount: number
+  members: string[]
+  createdAt: number
+  isOfficial?: boolean
+}
+
+export interface CommunityMessage {
+  id: string
+  senderUid: string
+  senderNickname: string
+  senderPhoto?: string
+  text: string
+  createdAt: number
+}

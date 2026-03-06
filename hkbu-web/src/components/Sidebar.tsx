@@ -7,13 +7,14 @@ import { UserProfile } from '../types'
 import s from './Sidebar.module.css'
 
 const NAV_ITEMS = [
-  { emoji: '🏠', label: 'Home',      path: '/main' },
-  { emoji: '🤝', label: 'Match',     path: '/match' },
-  { emoji: '🎉', label: 'Events',    path: '/events' },
-  { emoji: '💬', label: 'Messages',  path: '/inbox' },
-  { emoji: '🌐', label: 'Community', path: '/feed' },
-  { emoji: '👤', label: 'Profile',   path: '/profile' },
-  { emoji: '⚙️', label: 'Settings',  path: '/settings' },
+  { emoji: '🏠', label: 'Home',       path: '/main' },
+  { emoji: '🤝', label: 'Match',      path: '/match' },
+  { emoji: '🎉', label: 'Events',     path: '/events' },
+  { emoji: '💬', label: 'Messages',   path: '/inbox' },
+  { emoji: '🌐', label: 'Community',  path: '/feed' },
+  { emoji: '🤖', label: 'AI Chat',    path: '/ai' },
+  { emoji: '👤', label: 'Profile',    path: '/profile' },
+  { emoji: '⚙️', label: 'Settings',   path: '/settings' },
 ]
 
 interface Props { profile: UserProfile | null }
@@ -59,10 +60,11 @@ export default function Sidebar({ profile }: Props) {
       <nav className={s.nav}>
         {NAV_ITEMS.map(item => {
           const isInbox = item.path === '/inbox'
+          const isAI    = item.path === '/ai'
           return (
             <button
               key={item.path}
-              className={`${s.navItem} ${pathname.startsWith(item.path) ? s.navActive : ''}`}
+              className={`${s.navItem} ${pathname.startsWith(item.path) ? s.navActive : ''} ${isAI ? s.navAI : ''}`}
               onClick={() => nav(item.path)}
             >
               <span className={s.navEmoji}>{item.emoji}</span>
@@ -70,6 +72,7 @@ export default function Sidebar({ profile }: Props) {
               {isInbox && totalUnread > 0 && (
                 <span className={s.unreadBadge}>{totalUnread > 99 ? '99+' : totalUnread}</span>
               )}
+              {isAI && <span className={s.aiBadge}>NEW</span>}
             </button>
           )
         })}

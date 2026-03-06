@@ -6,6 +6,11 @@ interface Message {
   text: string
 }
 
+interface Props {
+  /** 'sidebar' renders inline inside the sidebar; default is floating FAB */
+  variant?: 'sidebar' | 'floating'
+}
+
 const HKBU_MODEL = import.meta.env.VITE_HKBU_GENAI_MODEL ?? 'gpt-4.1'
 
 // Dev → Vite proxy forwards to HKBU (no CORS issue server-side)
@@ -51,10 +56,17 @@ async function askBot(messages: { role: string; content: string }[]): Promise<st
   return data.choices?.[0]?.message?.content?.trim() ?? 'Sorry, I could not get a response.'
 }
 
-export default function HKBUChatBot() {
+const SUGGESTED = [
+  'Where is the library?',
+  'How do I check my GPA?',
+  'Canteen opening hours?',
+  'How to join a club?',
+]
+
+export default function HKBUChatBot({ variant = 'floating' }: Props) {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', text: "Hi! I'm HKBUChat 🎓 How can I help you today?" },
+    { role: 'bot', text: "Hi! I'm HKBUChat 🎓 Ask me anything about HKBU!" },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -64,8 +76,8 @@ export default function HKBUChatBot() {
     if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, open])
 
-  const send = async () => {
-    const text = input.trim()
+  const send = async (override?: string) => {
+    const text = (override ?? input).trim()
     if (!text || loading) return
 
     const userMsg: Message = { role: 'user', text }
@@ -75,87 +87,118 @@ export default function HKBUChatBot() {
 
     try {
       const history = [...messages, userMsg]
-        .filter(m => m.role === 'user' || m.role === 'bot')
         .map(m => ({ role: m.role === 'bot' ? 'assistant' : 'user', content: m.text }))
-
       const reply = await askBot(history)
       setMessages(prev => [...prev, { role: 'bot', text: reply }])
     } catch (err) {
-      console.error('[HKBUChat] askBot error:', err)
       const msg = err instanceof Error ? err.message : String(err)
-      setMessages(prev => [
-        ...prev,
-        { role: 'bot', text: `⚠️ Error: ${msg}` },
-      ])
+      setMessages(prev => [...prev, { role: 'bot', text: `⚠️ ${msg}` }])
     } finally {
       setLoading(false)
     }
   }
 
   const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      send()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
+  const clearChat = () => {
+    setMessages([{ role: 'bot', text: "Hi! I'm HKBUChat 🎓 Ask me anything about HKBU!" }])
+  }
+
+  // ── Shared chat body ─────────────────────────────────────────────────────
+  const chatBody = (
+    <>
+      <div className={variant === 'sidebar' ? s.messagesSidebar : s.messages}>
+        {messages.map((msg, i) => (
+          <div key={i} className={msg.role === 'user' ? s.msgUser : s.msgBot}>
+            {msg.role === 'bot' && <span className={s.botAvatar}>🤖</span>}
+            <div className={msg.role === 'user' ? s.bubbleUser : s.bubbleBot}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className={s.msgBot}>
+            <span className={s.botAvatar}>🤖</span>
+            <div className={s.bubbleBot}>
+              <span className={s.typing}><span /><span /><span /></span>
+            </div>
+          </div>
+        )}
+        {/* Quick suggested prompts — show only when just the greeting is visible */}
+        {messages.length === 1 && !loading && (
+          <div className={s.suggestRow}>
+            {SUGGESTED.map(q => (
+              <button key={q} className={s.suggestBtn} onClick={() => send(q)}>{q}</button>
+            ))}
+          </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      <div className={s.inputRow}>
+        <textarea
+          className={s.textArea}
+          rows={1}
+          placeholder="Ask me anything about HKBU…"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKey}
+          disabled={loading}
+        />
+        <button className={s.sendBtn} onClick={() => send()} disabled={loading || !input.trim()}>
+          ➤
+        </button>
+      </div>
+    </>
+  )
+
+  // ── SIDEBAR VARIANT ──────────────────────────────────────────────────────
+  if (variant === 'sidebar') {
+    return (
+      <div className={s.sidebarWrapper}>
+        {/* Toggle row */}
+        <button className={s.sidebarToggle} onClick={() => setOpen(o => !o)}>
+          <span className={s.sidebarToggleLeft}>
+            <span className={s.sidebarToggleEmoji}>🤖</span>
+            <span className={s.sidebarToggleLabel}>AI Assistant</span>
+          </span>
+          <span className={s.sidebarToggleChevron}>{open ? '▲' : '▼'}</span>
+        </button>
+
+        {/* Inline chat panel */}
+        {open && (
+          <div className={s.sidebarPanel}>
+            {/* Mini header */}
+            <div className={s.sidebarPanelHeader}>
+              <span>🎓 HKBUChat</span>
+              <button className={s.clearBtn} onClick={clearChat} title="Clear chat">↺</button>
+            </div>
+            {chatBody}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── FLOATING VARIANT (kept for reference) ────────────────────────────────
   return (
     <>
-      {/* Floating toggle button */}
       <button className={s.fab} onClick={() => setOpen(o => !o)} aria-label="Open HKBUChat">
         {open ? '✕' : '🤖'}
       </button>
-
-      {/* Chat panel */}
       {open && (
         <div className={s.panel}>
-          {/* Header */}
           <div className={s.header}>
             <span className={s.headerEmoji}>🎓</span>
             <div>
               <p className={s.headerTitle}>HKBUChat</p>
               <p className={s.headerSub}>AI assistant for HKBU students</p>
             </div>
+            <button className={s.clearBtnFloat} onClick={clearChat} title="Clear">↺</button>
           </div>
-
-          {/* Messages */}
-          <div className={s.messages}>
-            {messages.map((msg, i) => (
-              <div key={i} className={msg.role === 'user' ? s.msgUser : s.msgBot}>
-                {msg.role === 'bot' && <span className={s.botAvatar}>🤖</span>}
-                <div className={msg.role === 'user' ? s.bubbleUser : s.bubbleBot}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className={s.msgBot}>
-                <span className={s.botAvatar}>🤖</span>
-                <div className={s.bubbleBot}>
-                  <span className={s.typing}>
-                    <span /><span /><span />
-                  </span>
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-
-          {/* Input */}
-          <div className={s.inputRow}>
-            <textarea
-              className={s.textArea}
-              rows={1}
-              placeholder="Ask me anything about HKBU…"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              disabled={loading}
-            />
-            <button className={s.sendBtn} onClick={send} disabled={loading || !input.trim()}>
-              ➤
-            </button>
-          </div>
+          {chatBody}
         </div>
       )}
     </>

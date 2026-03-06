@@ -5,7 +5,6 @@ import { auth, db } from '../config/firebaseConfig'
 import { UserProfile } from '../types'
 import Sidebar from './Sidebar'
 import s from './Sidebar.module.css'
-import HKBUChatBot from './HKBUChatBot'
 
 export default function AppLayout() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -23,7 +22,6 @@ export default function AppLayout() {
       <div className={s.mainContent}>
         <Outlet />
       </div>
-      <HKBUChatBot />
     </div>
   )
 }

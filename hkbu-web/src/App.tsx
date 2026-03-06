@@ -15,6 +15,8 @@ import ChatPage from './pages/ChatPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
 import InboxPage from './pages/InboxPage'
+import CommunityRoomPage from './pages/CommunityRoomPage'
+import AIChatPage from './pages/AIChatPage'
 
 function ProtectedRoute({ user, children }: { user: User | null; children: JSX.Element }) {
   if (!user) return <Navigate to="/" replace />
@@ -48,7 +50,9 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/inbox" element={<InboxPage />} />
+          <Route path="/ai" element={<AIChatPage />} />
           <Route path="/chat/:matchId/:matchNickname/:otherUid" element={<ChatPage />} />
+          <Route path="/community/:communityId" element={<CommunityRoomPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
