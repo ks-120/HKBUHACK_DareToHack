@@ -209,7 +209,8 @@ export default function FeedPage() {
 
   // 🔗 Share — copy per-post URL & show toast
   const handleShare = (postId: string) => {
-    const url = `${window.location.origin}/feed#${postId}`
+    // Build URL using the current page location so it respects the /HKBUHACK_DareToHack/ base
+    const url = `${window.location.origin}${window.location.pathname}#${postId}`
     navigator.clipboard.writeText(url)
     if (toastTimer.current) clearTimeout(toastTimer.current)
     setToast('🔗 Link copied!')

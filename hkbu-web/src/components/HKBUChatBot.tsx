@@ -6,11 +6,13 @@ interface Message {
   text: string
 }
 
-// ── HKBU GenAI Platform config ────────────────────────────────────────────────
-const HKBU_BASE_URL   = '/hkbu-api'
-const HKBU_MODEL      = import.meta.env.VITE_HKBU_GENAI_MODEL ?? 'gpt-4.1'
-const HKBU_API_KEY    = import.meta.env.VITE_HKBU_GENAI_API_KEY ?? ''
-const HKBU_API_VER    = '2024-12-01-preview'
+const HKBU_MODEL = import.meta.env.VITE_HKBU_GENAI_MODEL ?? 'gpt-4.1'
+
+// Dev → Vite proxy forwards to HKBU (no CORS issue server-side)
+// Prod → Cloudflare Worker proxy (free, handles CORS)
+const PROXY_URL = import.meta.env.DEV
+  ? '/hkbu-api/deployments/gpt-4.1/chat/completions?api-version=2024-12-01-preview'
+  : 'https://hkbu-chat-proxy.daretohack.workers.dev'
 
 const SYSTEM_PROMPT = `You are HKBUChat, a friendly and helpful AI assistant for Hong Kong Baptist University (HKBU) students. 
 You help students with:
@@ -22,21 +24,18 @@ You help students with:
 Always be concise, warm, and helpful. If you don't know something specific about HKBU, give the best general advice you can.`
 
 async function askBot(messages: { role: string; content: string }[]): Promise<string> {
-  const url = `${HKBU_BASE_URL}/deployments/${HKBU_MODEL}/chat/completions?api-version=${HKBU_API_VER}`
-
-  const res = await fetch(url, {
+  const res = await fetch(PROXY_URL, {
     method: 'POST',
     headers: {
-      'accept': 'application/json',
       'Content-Type': 'application/json',
-      'api-key': HKBU_API_KEY,
+      // only needed in dev (Vite proxy forwards this to HKBU directly)
+      ...(import.meta.env.DEV ? { 'api-key': import.meta.env.VITE_HKBU_GENAI_API_KEY ?? '' } : {}),
     },
     body: JSON.stringify({
+      model: HKBU_MODEL,
       messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
       temperature: 0.7,
       max_tokens: 1024,
-      top_p: 1,
-      stream: false,
     }),
   })
 
@@ -81,10 +80,12 @@ export default function HKBUChatBot() {
 
       const reply = await askBot(history)
       setMessages(prev => [...prev, { role: 'bot', text: reply }])
-    } catch {
+    } catch (err) {
+      console.error('[HKBUChat] askBot error:', err)
+      const msg = err instanceof Error ? err.message : String(err)
       setMessages(prev => [
         ...prev,
-        { role: 'bot', text: '⚠️ Sorry, I ran into an error. Please try again later.' },
+        { role: 'bot', text: `⚠️ Error: ${msg}` },
       ])
     } finally {
       setLoading(false)

@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "buhack-a71e2"
+  },
+  "targets": {
+    "buhack-a71e2": {
+      "hosting": {
+        "main": ["daretohack"]
+      }
+    }
+  }
+}

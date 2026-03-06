@@ -4,12 +4,21 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../config/firebaseConfig'
 import s from './Page.module.css'
 
+const FRIENDLY: Record<string, string> = {
+  'auth/user-not-found':         'No account found with that email.',
+  'auth/wrong-password':         'Incorrect password. Please try again.',
+  'auth/invalid-credential':     'Email or password is incorrect.',
+  'auth/invalid-email':          'Please enter a valid email address.',
+  'auth/too-many-requests':      'Too many attempts. Please wait a moment and try again.',
+  'auth/network-request-failed': 'Network error. Check your connection.',
+}
+
 export default function LoginPage() {
   const nav = useNavigate()
-  const [email, setEmail] = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,8 +27,9 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password)
       nav('/main')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code ?? ''
+      setError(FRIENDLY[code] ?? 'Login failed. Please check your credentials.')
     } finally {
       setLoading(false)
     }
@@ -33,7 +43,7 @@ export default function LoginPage() {
         <p className={s.authSub}>Log in to your HKBU Buddy account</p>
         <form onSubmit={handleLogin} className={s.form}>
           <label className={s.label}>Email</label>
-          <input className={s.input} type="email" placeholder="xxx@student.hkbu.edu.hk"
+          <input className={s.input} type="email" placeholder="xxx@life.hkbu.edu.hk"
             value={email} onChange={e => setEmail(e.target.value)} required />
           <label className={s.label}>Password</label>
           <input className={s.input} type="password" placeholder="Your password"

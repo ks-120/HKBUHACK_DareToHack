@@ -6,20 +6,22 @@ import AvatarUpload from '../components/AvatarUpload'
 import s from './Page.module.css'
 
 const ALL_INTERESTS: Interest[] = [
-  'Sports', 'Hiking', 'Language Exchange', 'Music', 'Gaming',
-  'Study Groups', 'Photography', 'Cooking', 'Travel',
-  'Art & Design', 'Tech & Coding', 'Film & TV',
+  'Sports / Fitness', 'Hiking', 'Language Exchange', 'Music / Singing', 'Gaming / Esports',
+  'Study Groups', 'Photography', 'Cooking / Food', 'Travel / Exploring HK',
+  'Art & Design', 'Tech & Coding', 'Film / Drama / Anime',
+  'Volunteering', 'Debate / Public Speaking', 'Yoga / Martial Arts', 'Religion / Mindfulness',
 ]
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [editing, setEditing] = useState(false)
-  const [nickname, setNickname] = useState('')
+  const [profile, setProfile]     = useState<UserProfile | null>(null)
+  const [editing, setEditing]     = useState(false)
+  const [nickname, setNickname]   = useState('')
+  const [bio, setBio]             = useState('')
   const [interests, setInterests] = useState<Interest[]>([])
-  const [photoURL, setPhotoURL] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [missing, setMissing] = useState(false)
+  const [photoURL, setPhotoURL]   = useState('')
+  const [saving, setSaving]       = useState(false)
+  const [saved, setSaved]         = useState(false)
+  const [missing, setMissing]     = useState(false)
 
   useEffect(() => {
     const user = auth.currentUser
@@ -29,7 +31,8 @@ export default function ProfilePage() {
         const data = snap.data() as UserProfile
         setProfile(data)
         setNickname(data.nickname)
-        setInterests(data.interests)
+        setBio(data.bio ?? '')
+        setInterests(data.interests ?? [])
         setPhotoURL(data.photoURL ?? '')
       } else {
         setMissing(true)
@@ -44,17 +47,16 @@ export default function ProfilePage() {
     const user = auth.currentUser
     if (!user || !nickname.trim()) return
     setSaving(true)
-    const data: UserProfile = {
-      uid: user.uid,
+    // merge: true preserves ALL other fields (studyStyles, buddyTypes, etc.)
+    // we only update the fields exposed in this edit form
+    const updates: Partial<UserProfile> = {
       nickname: nickname.trim(),
-      email: user.email ?? '',
+      bio:      bio.trim(),
       interests,
       photoURL,
-      privacyConsent: true,
-      createdAt: profile?.createdAt ?? Date.now(),
     }
-    await setDoc(doc(db, 'users', user.uid), data, { merge: true })
-    setProfile(data)
+    await setDoc(doc(db, 'users', user.uid), updates, { merge: true })
+    setProfile(p => p ? { ...p, ...updates } : p)
     setMissing(false)
     setSaving(false)
     setEditing(false)
@@ -62,7 +64,6 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 3000)
   }
 
-  // When a new photo is uploaded while NOT in edit mode (direct photo change)
   const handlePhotoChange = async (url: string) => {
     setPhotoURL(url)
     const user = auth.currentUser
@@ -113,21 +114,54 @@ export default function ProfilePage() {
       {/* Avatar + info card */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24,
         background: 'var(--bg2)', borderRadius: 16, padding: 24, border: '1px solid var(--border)' }}>
-        {/* Always-clickable avatar — change photo without entering edit mode */}
-        <AvatarUpload
-          uid={profile.uid}
-          currentURL={photoURL}
-          nickname={profile.nickname}
-          onUploaded={handlePhotoChange}
-        />
+        <AvatarUpload uid={profile.uid} currentURL={photoURL}
+          nickname={profile.nickname} onUploaded={handlePhotoChange} />
         <div style={{ overflow: 'hidden' }}>
           <div style={{ color: '#fff', fontSize: 22, fontWeight: 800 }}>{profile.nickname}</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, marginTop: 4 }}>{profile.email}</div>
+          {profile.major && (
+            <div style={{ color: 'var(--text2)', fontSize: 13, marginTop: 2 }}>
+              📚 {profile.major}{profile.yearOfStudy ? ` · ${profile.yearOfStudy}` : ''}
+            </div>
+          )}
           <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 4 }}>
             🗓 Joined {new Date(profile.createdAt).toLocaleDateString()}
           </div>
         </div>
       </div>
+
+      {/* Read-only summary cards */}
+      {!editing && (
+        <>
+          {profile.bio && (
+            <div style={{ background: 'var(--bg2)', borderRadius: 14, padding: '14px 16px',
+              border: '1px solid var(--border)', marginBottom: 12 }}>
+              <p className={s.label}>Bio</p>
+              <p style={{ color: '#fff', fontSize: 14, lineHeight: 1.6, marginTop: 6 }}>{profile.bio}</p>
+            </div>
+          )}
+
+          {(profile.studyStyles ?? []).length > 0 && (
+            <div style={{ background: 'var(--bg2)', borderRadius: 14, padding: '14px 16px',
+              border: '1px solid var(--border)', marginBottom: 12 }}>
+              <p className={s.label}>Study Style</p>
+              <div className={s.chipGrid} style={{ marginTop: 8 }}>
+                {(profile.studyStyles ?? []).map(i => <span key={i} className={s.chipActive}>{i}</span>)}
+              </div>
+            </div>
+          )}
+
+          {(profile.buddyTypes ?? []).length > 0 && (
+            <div style={{ background: 'var(--bg2)', borderRadius: 14, padding: '14px 16px',
+              border: '1px solid var(--border)', marginBottom: 12 }}>
+              <p className={s.label}>Looking For</p>
+              <div className={s.chipGrid} style={{ marginTop: 8 }}>
+                {(profile.buddyTypes ?? []).map(i => <span key={i} className={s.chipActive}>{i}</span>)}
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Interests + edit */}
       {editing ? (
@@ -137,6 +171,13 @@ export default function ProfilePage() {
             <p className={s.label}>Nickname</p>
             <input className={s.input} value={nickname}
               onChange={e => setNickname(e.target.value)} placeholder="Your nickname" />
+          </div>
+          <div>
+            <p className={s.label}>Bio <span style={{ fontWeight: 400, color: 'var(--text2)' }}>(optional)</span></p>
+            <textarea className={s.input} style={{ resize: 'vertical', minHeight: 72 }}
+              value={bio} maxLength={150}
+              onChange={e => setBio(e.target.value)}
+              placeholder="Tell people a little about yourself…" />
           </div>
           <div>
             <p className={s.label}>Interests</p>
@@ -150,12 +191,13 @@ export default function ProfilePage() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button className={s.btnPrimary} onClick={handleSave}
-              disabled={saving || !nickname.trim() || interests.length === 0}>
+              disabled={saving || !nickname.trim()}>
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
             <button className={s.btnGhost} onClick={() => {
               setNickname(profile.nickname)
-              setInterests(profile.interests)
+              setBio(profile.bio ?? '')
+              setInterests(profile.interests ?? [])
               setEditing(false)
             }}>Cancel</button>
           </div>
@@ -166,8 +208,8 @@ export default function ProfilePage() {
           <div>
             <p className={s.label}>Interests</p>
             <div className={s.chipGrid} style={{ marginTop: 10 }}>
-              {profile.interests.length > 0
-                ? profile.interests.map(i => <span key={i} className={s.chipActive}>{i}</span>)
+              {(profile.interests ?? []).length > 0
+                ? (profile.interests ?? []).map(i => <span key={i} className={s.chipActive}>{i}</span>)
                 : <span style={{ color: 'var(--text2)', fontSize: 14 }}>No interests set yet.</span>}
             </div>
           </div>

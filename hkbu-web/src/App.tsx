@@ -32,7 +32,7 @@ export default function App() {
   if (user === undefined) return null
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Routes>
         {/* Public routes */}
         <Route path="/" element={user ? <Navigate to="/main" replace /> : <WelcomePage />} />

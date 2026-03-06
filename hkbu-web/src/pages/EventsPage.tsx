@@ -12,9 +12,19 @@ import s from './Page.module.css'
 
 const EMOJI_OPTIONS = ['🎉','🎵','🏃','🎨','🍜','📷','🎬','🎮','💻','🧘','🤝','📚','🛠️','🎭','✈️']
 
+const IS_DEV = import.meta.env.DEV
+const CF_WORKER = 'https://hkbu-chat-proxy.daretohack.workers.dev'
+
 function proxyImg(url: string): string {
   if (!url) return ''
-  return url.replace('https://sa.hkbu.edu.hk', '/hkbu-img')
+  // Cloudinary URLs are already CORS-friendly — use as-is
+  if (url.includes('cloudinary.com')) return url
+  // sa.hkbu.edu.hk has no CORS headers — proxy through Cloudflare Worker in prod, Vite proxy in dev
+  if (url.includes('sa.hkbu.edu.hk') || url.startsWith('/')) {
+    if (IS_DEV) return url.replace('https://sa.hkbu.edu.hk', '/hkbu-img')
+    return `${CF_WORKER}/img?url=${encodeURIComponent(url)}`
+  }
+  return url
 }
 
 const BLANK = { title: '', description: '', date: null as Date | null, time: '', location: '', emoji: '🎉' }

@@ -1,0 +1,7 @@
+name = "hkbu-chat-proxy"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+HKBU_BASE_URL = "https://genai.hkbu.edu.hk/api/v0/rest"
+HKBU_API_VER = "2024-12-01-preview"

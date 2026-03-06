@@ -1,83 +1,80 @@
 """
-HKBU SA Events Scraper
-======================
+HKBU SA Events Scraper  (fast mode — skips detail pages)
+=========================================================
 Scrapes upcoming events from https://sa.hkbu.edu.hk and writes them to Firestore.
+Images are re-uploaded to Cloudinary so they load correctly on GitHub Pages
+(sa.hkbu.edu.hk sends no CORS headers, blocking browsers on other origins).
 
-Setup:
-  1. Go to Firebase Console → Project Settings → Service Accounts → Generate new private key
-  2. Save the downloaded JSON as:  scripts/serviceAccountKey.json
-  3. Run:  ../.venv/bin/python scrape_events.py
-
-Requirements (already in ../.venv):
-  playwright, beautifulsoup4, lxml, firebase-admin
+Usage:
+  cd /Users/kshing.120/Desktop/BUHack/BUHACK-DareToHack
+  .venv/bin/python scripts/scrape_events.py
 """
 
-import json
-import re
-import sys
-import os
+import json, re, sys, os, hashlib, time
+import requests
 from datetime import datetime
 from urllib.parse import urljoin, quote
 
-# ── Playwright ────────────────────────────────────────────────────────────────
 try:
     from playwright.sync_api import sync_playwright
 except ImportError:
-    sys.exit("playwright not found — run: pip install playwright && playwright install chromium")
+    sys.exit("playwright not found — run: .venv/bin/pip install playwright && .venv/bin/playwright install chromium")
 
-# ── BeautifulSoup ─────────────────────────────────────────────────────────────
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    sys.exit("beautifulsoup4 not found — run: pip install beautifulsoup4 lxml")
+    sys.exit("beautifulsoup4 not found — run: .venv/bin/pip install beautifulsoup4 lxml")
 
-# ── Firebase Admin ────────────────────────────────────────────────────────────
 try:
     import firebase_admin
     from firebase_admin import credentials, firestore
 except ImportError:
-    sys.exit("firebase-admin not found — run: pip install firebase-admin")
+    sys.exit("firebase-admin not found — run: .venv/bin/pip install firebase-admin")
 
-# ─────────────────────────────────────────────────────────────────────────────
-BASE_URL   = "https://sa.hkbu.edu.hk"
-LIST_URL   = (
-    "https://sa.hkbu.edu.hk/content/sa/en/live/live_events.html"
-    "?pageSize=100&page=0"
-)
-SA_DOMAIN  = "https://sa.hkbu.edu.hk"
+# ── Config ────────────────────────────────────────────────────────────────────
+LIST_URL    = "https://sa.hkbu.edu.hk/content/sa/en/live/live_events.html?pageSize=100&page=0"
+SA_DOMAIN   = "https://sa.hkbu.edu.hk"
 SERVICE_KEY = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
 
+CLOUDINARY_CLOUD  = "dfmzbrn3q"
+CLOUDINARY_PRESET = "avatar_unsigned"
+CLOUDINARY_UPLOAD = f"https://api.cloudinary.com/v1_1/{CLOUDINARY_CLOUD}/image/upload"
+
+# ── Cloudinary upload ─────────────────────────────────────────────────────────
+def upload_to_cloudinary(image_url: str, public_id: str) -> str:
+    """Re-host an sa.hkbu.edu.hk image on Cloudinary (CORS-friendly CDN)."""
+    if not image_url:
+        return ""
+    try:
+        resp = requests.post(
+            CLOUDINARY_UPLOAD,
+            data={
+                "file":          image_url,
+                "upload_preset": CLOUDINARY_PRESET,
+                "folder":        "events",          # allowed with unsigned preset
+                "public_id":     public_id,         # slug only, no slashes
+                # "overwrite" is NOT allowed with unsigned presets — removed
+            },
+            timeout=40,
+        )
+        if resp.status_code == 200:
+            url = resp.json().get("secure_url", "")
+            print(f"      ☁  Cloudinary OK → {url}")
+            return url
+        print(f"      ⚠  Cloudinary {resp.status_code}: {resp.text[:200]}")
+        return ""
+    except Exception as e:
+        print(f"      ⚠  Cloudinary error: {e}")
+        return ""
+
+# ── Emoji map ─────────────────────────────────────────────────────────────────
 EMOJI_MAP = {
-    "sports":        "🏃",
-    "wellness":      "🧘",
-    "music":         "🎵",
-    "art":           "🎨",
-    "culture":       "🎭",
-    "drama":         "🎭",
-    "theatre":       "🎭",
-    "film":          "🎬",
-    "gaming":        "🎮",
-    "tech":          "💻",
-    "coding":        "💻",
-    "hack":          "💻",
-    "language":      "💬",
-    "food":          "🍜",
-    "photography":   "📷",
-    "hike":          "🥾",
-    "hiking":        "🥾",
-    "study":         "📚",
-    "workshop":      "🛠️",
-    "orientation":   "🎓",
-    "open day":      "🎓",
-    "fair":          "🎪",
-    "exhibition":    "🖼️",
-    "concert":       "🎶",
-    "talk":          "🗣️",
-    "seminar":       "🗣️",
-    "volunteer":     "🤝",
-    "charity":       "❤️",
-    "trip":          "✈️",
-    "exchange":      "🌏",
+    "sports":"🏃","wellness":"🧘","music":"🎵","art":"🎨","culture":"🎭",
+    "drama":"🎭","theatre":"🎭","film":"🎬","gaming":"🎮","tech":"💻",
+    "coding":"💻","hack":"💻","language":"💬","food":"🍜","photography":"📷",
+    "hike":"🥾","hiking":"🥾","study":"📚","workshop":"🛠️","orientation":"🎓",
+    "open day":"🎓","fair":"🎪","exhibition":"🖼️","concert":"🎶","talk":"🗣️",
+    "seminar":"🗣️","volunteer":"🤝","charity":"❤️","trip":"✈️","exchange":"🌏",
 }
 
 def pick_emoji(title: str, category: str) -> str:
@@ -87,191 +84,147 @@ def pick_emoji(title: str, category: str) -> str:
             return em
     return "🎉"
 
-# ─────────────────────────────────────────────────────────────────────────────
-def fetch_html(url: str, wait_ms: int = 4000) -> str:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url, timeout=30_000)
-        # Wait for images to lazy-load by scrolling to bottom
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(wait_ms)
-        html = page.content()
-        browser.close()
-    return html
-
+# ── Helpers ───────────────────────────────────────────────────────────────────
 def sanitise_image_url(src: str) -> str:
-    """
-    - Reject base64 / data URIs (lazy-load placeholders)
-    - URL-encode spaces and special chars in the path
-    """
     if not src or src.startswith("data:"):
         return ""
-    # Make absolute
     if not src.startswith("http"):
         src = urljoin(SA_DOMAIN, src)
-    # Encode spaces and non-ASCII in the path portion only
     parts = src.split("?", 1)
     path  = quote(parts[0], safe=":/%#=&+")
     return path + ("?" + parts[1] if len(parts) > 1 else "")
 
 def parse_date_str(raw: str) -> str:
-    """
-    Convert the site's date format 'DD.MM.YYYY' or 'MMM DD, YYYY' into
-    a normalised 'Mon DD, YYYY' string that matches the existing app format.
-    """
     raw = raw.strip()
-    # e.g. "06.03.2026"
     m = re.match(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", raw)
     if m:
-        day, month, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
-        dt = datetime(year, month, day)
-        return dt.strftime("%b %d, %Y")
-    # already a nice format
+        d, mo, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        return datetime(y, mo, d).strftime("%b %d, %Y")
     return raw
 
-def scrape_event_detail(url: str) -> dict:
-    """Return {time, venue, description} from an event detail page."""
-    result = {"time": "", "venue": "", "description": ""}
+# ── Single Playwright session for the whole run ───────────────────────────────
+def fetch_html_once(url: str, page, wait_ms: int = 6000) -> str:
+    """Reuse an already-open Playwright page — much faster than launching a new browser each time."""
     try:
-        html = fetch_html(url, wait_ms=3000)
-        soup = BeautifulSoup(html, "lxml")
-
-        detail = soup.find(class_="eventdetail")
-        if not detail:
-            return result
-
-        # Key–value pairs are stored as alternating <p class="tel-row"> / <p class="tel-text">
-        rows  = [p.get_text(strip=True) for p in detail.find_all("p", class_="tel-row")]
-        texts = [p.get_text(strip=True) for p in detail.find_all("p", class_="tel-text")]
-        kv = {r.rstrip(":").upper(): t for r, t in zip(rows, texts)}
-
-        result["time"]  = kv.get("TIME", "")
-        result["venue"] = kv.get("VENUE", "")
-
-        # Build a human-readable description from the remaining fields
-        skip = {"TIME", "VENUE"}
-        desc_parts = [f"{k}: {v}" for k, v in kv.items() if k not in skip and v]
-        result["description"] = "  |  ".join(desc_parts)
-
+        page.goto(url, timeout=60_000, wait_until="domcontentloaded")
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        page.wait_for_timeout(wait_ms)
+        return page.content()
     except Exception as e:
-        print(f"    ⚠  Could not fetch detail page {url}: {e}")
-    return result
+        print(f"    ⚠  fetch failed for {url}: {e}")
+        return ""
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Main scrape ───────────────────────────────────────────────────────────────
 def scrape_events() -> list[dict]:
-    print(f"🌐  Fetching event listing …  ({LIST_URL})")
-    html = fetch_html(LIST_URL, wait_ms=5000)
-    soup = BeautifulSoup(html, "lxml")
-
-    cards = soup.find_all(class_="content-filtering__item")
-    print(f"✅  Found {len(cards)} event card(s)")
-
     events = []
-    for card in cards:
-        # ── Link & detail URL ──────────────────────────────────────────────
-        link_tag = card.find_parent("a", class_="content-filtering__item-link") or \
-                   card.find("a", class_="content-filtering__item-link")
-        detail_url = ""
-        if link_tag and link_tag.get("href"):
-            href = link_tag["href"]
-            detail_url = href if href.startswith("http") else urljoin(SA_DOMAIN, href)
 
-        # ── Title ──────────────────────────────────────────────────────────
-        title_tag = card.find(class_="content-filtering__item-content-title")
-        title = title_tag.get_text(strip=True) if title_tag else "Untitled"
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page    = browser.new_page()
 
-        # ── Date ───────────────────────────────────────────────────────────
-        date_tag = card.find(class_="content-filtering__item-content-date")
-        raw_date = date_tag.get_text(strip=True) if date_tag else ""
-        date_str = parse_date_str(raw_date)
+        # ── 1. Listing page ───────────────────────────────────────────────
+        print(f"🌐  Loading listing page …")
+        html = fetch_html_once(LIST_URL, page, wait_ms=6000)
+        if not html:
+            browser.close()
+            return []
 
-        # ── Category ───────────────────────────────────────────────────────
-        cat_tag = card.find(class_="content-filtering__item-content-category")
-        category = cat_tag.get_text(strip=True) if cat_tag else ""
+        soup  = BeautifulSoup(html, "lxml")
+        cards = soup.find_all(class_="content-filtering__item")
+        print(f"✅  Found {len(cards)} event card(s)\n")
 
-        # ── Image — prefer data-src (real URL) over src (may be placeholder) ──
-        img_tag = card.find("img")
-        image_url = ""
-        if img_tag:
-            # Try data-src first (lazy-load real URL), then fall back to src
-            raw_src = (img_tag.get("data-src") or "").strip() or \
-                      (img_tag.get("src") or "").strip()
-            image_url = sanitise_image_url(raw_src)
+        for i, card in enumerate(cards, 1):
+            # Title
+            title_tag = card.find(class_="content-filtering__item-content-title")
+            title = title_tag.get_text(strip=True) if title_tag else "Untitled"
 
-        print(f"  → {title}  [{date_str}]  img={'✓' if image_url else '✗'}")
+            # Date
+            date_tag = card.find(class_="content-filtering__item-content-date")
+            date_str = parse_date_str(date_tag.get_text(strip=True) if date_tag else "")
 
-        # ── Detail page ────────────────────────────────────────────────────
-        detail_data = {"time": "", "venue": "", "description": ""}
-        if detail_url:
-            detail_data = scrape_event_detail(detail_url)
+            # Category
+            cat_tag  = card.find(class_="content-filtering__item-content-category")
+            category = cat_tag.get_text(strip=True) if cat_tag else ""
 
-        emoji = pick_emoji(title, category)
-        location = detail_data["venue"] or "HKBU Campus"
-        description = detail_data["description"] or f"{category} event at HKBU."
+            # Detail URL
+            link_tag   = card.find_parent("a", class_="content-filtering__item-link") or \
+                         card.find("a", class_="content-filtering__item-link")
+            detail_url = ""
+            if link_tag and link_tag.get("href"):
+                href = link_tag["href"]
+                detail_url = href if href.startswith("http") else urljoin(SA_DOMAIN, href)
 
-        events.append({
-            "title":       title,
-            "description": description,
-            "date":        date_str,
-            "time":        detail_data["time"],
-            "location":    location,
-            "emoji":       emoji,
-            "category":    category,
-            "imageUrl":    image_url,
-            "detailUrl":   detail_url,
-            "source":      "hkbu-sa",
-            "createdAt":   int(__import__('time').time() * 1000),
-            "rsvpCount":   0,
-            "rsvpedBy":    [],
-        })
+            # Image — prefer data-src (lazy-load real URL) over src (may be placeholder)
+            img_tag      = card.find("img")
+            sa_image_url = ""
+            if img_tag:
+                raw = (img_tag.get("data-src") or "").strip() or (img_tag.get("src") or "").strip()
+                sa_image_url = sanitise_image_url(raw)
+
+            print(f"  [{i}/{len(cards)}] {title}  |  {date_str}")
+
+            # ── Upload image to Cloudinary ─────────────────────────────────
+            image_url = ""
+            if sa_image_url:
+                slug = hashlib.md5(sa_image_url.encode()).hexdigest()[:12]
+                image_url = upload_to_cloudinary(sa_image_url, slug)   # slug only, no slashes
+                if not image_url:
+                    image_url = sa_image_url   # fall back to original on failure
+
+            events.append({
+                "title":       title,
+                "description": f"{category} event at HKBU.".strip() if category else "HKBU Campus event.",
+                "date":        date_str,
+                "time":        "",
+                "location":    "HKBU Campus",
+                "emoji":       pick_emoji(title, category),
+                "category":    category,
+                "imageUrl":    image_url,
+                "detailUrl":   detail_url,
+                "source":      "hkbu-sa",
+                "createdAt":   int(time.time() * 1000),
+                "rsvpCount":   0,
+                "rsvpedBy":    [],
+            })
+
+        browser.close()
 
     return events
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Firestore write ───────────────────────────────────────────────────────────
 def write_to_firestore(events: list[dict]):
     if not os.path.exists(SERVICE_KEY):
-        print(
-            "\n❌  Service account key not found!\n"
-            f"    Expected:  {SERVICE_KEY}\n\n"
-            "    Steps:\n"
-            "      1. Firebase Console → Project Settings → Service Accounts\n"
-            "      2. Click 'Generate new private key'\n"
-            "      3. Save the downloaded file as  scripts/serviceAccountKey.json\n"
-            "      4. Re-run this script.\n"
-        )
-        # Still save events locally so you can inspect them
         out = os.path.join(os.path.dirname(__file__), "events_output.json")
         with open(out, "w", encoding="utf-8") as f:
             json.dump(events, f, ensure_ascii=False, indent=2)
-        print(f"💾  Events saved locally to {out}")
+        print(f"\n❌  serviceAccountKey.json not found — saved locally to {out}")
         return
 
     cred = credentials.Certificate(SERVICE_KEY)
-    firebase_admin.initialize_app(cred)
-    fs = firestore.client()
-
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+    fs  = firestore.client()
     col = fs.collection("events")
 
-    # Remove previously scraped SA events so we don't duplicate
-    existing = col.where("source", "==", "hkbu-sa").stream()
+    # Delete old scraped events
     deleted = 0
-    for doc in existing:
+    for doc in col.where("source", "==", "hkbu-sa").stream():
         doc.reference.delete()
         deleted += 1
     if deleted:
-        print(f"🗑   Removed {deleted} old SA event(s) from Firestore")
+        print(f"\n🗑   Deleted {deleted} old SA event(s)")
 
     for ev in events:
         col.add(ev)
         print(f"  ✓  {ev['title']}")
 
-    print(f"\n🎉  {len(events)} event(s) written to Firestore collection 'events'")
+    print(f"\n🎉  {len(events)} event(s) written to Firestore!")
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    events = scrape_events()
-    if not events:
-        print("⚠  No events found — the page structure may have changed.")
+    evs = scrape_events()
+    if not evs:
+        print("⚠  No events found.")
         sys.exit(1)
-    write_to_firestore(events)
+    print(f"\n📦  Scraped {len(evs)} events. Writing to Firestore …\n")
+    write_to_firestore(evs)

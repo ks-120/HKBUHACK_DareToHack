@@ -74,27 +74,25 @@ export default function ChatPage() {
 
     const decodedName = decodeURIComponent(matchNickname ?? '')
 
-    // update chat metadata — ensure doc exists with participant info
+    // read current unread count for the receiver BEFORE writing
+    let currentUnread = 0
+    try {
+      const chatSnap = await getDoc(doc(db, 'chats', matchId))
+      if (chatSnap.exists()) {
+        currentUnread = (chatSnap.data()[`unread_${otherUid}`] as number) ?? 0
+      }
+    } catch { /* non-critical */ }
+
+    // single atomic write — no double-set race
     await setDoc(doc(db, 'chats', matchId), {
       participants: [myUid, otherUid].sort(),
       participantNames:  { [myUid]: myNickname || 'Me', [otherUid]: decodedName },
       participantPhotos: { [myUid]: myPhoto, [otherUid]: otherPhotoURL },
       lastMessage: trimmed.length > 60 ? trimmed.slice(0, 60) + '…' : trimmed,
       lastAt: Date.now(),
-      [`unread_${myUid}`]: 0,          // I sent it — I've read it
-      [`unread_${otherUid}`]: 1,       // notify the other person
+      [`unread_${myUid}`]: 0,                    // I sent it — already read
+      [`unread_${otherUid}`]: currentUnread + 1, // accumulate correctly
     }, { merge: true })
-
-    // increment receiver's unread (don't reset to 1, actually accumulate)
-    try {
-      const chatSnap = await getDoc(doc(db, 'chats', matchId))
-      if (chatSnap.exists()) {
-        const current = (chatSnap.data()[`unread_${otherUid}`] as number) ?? 0
-        await updateDoc(doc(db, 'chats', matchId), {
-          [`unread_${otherUid}`]: current + 1,
-        })
-      }
-    } catch { /* non-critical */ }
   }
 
   const fmt = (ts: number) =>

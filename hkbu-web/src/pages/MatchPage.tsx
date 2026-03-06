@@ -23,27 +23,41 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 
 export default function MatchPage() {
   const nav = useNavigate()
-  const [matches, setMatches] = useState<MatchResult[]>([])
+  const [matches, setMatches]   = useState<MatchResult[]>([])
   const [myProfile, setMyProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState('')
   const [expanded, setExpanded] = useState<string | null>(null)
 
   useEffect(() => { loadMatches() }, [])
 
   const loadMatches = async () => {
     const uid = auth.currentUser?.uid
-    if (!uid) return
-    const mySnap = await getDoc(doc(db, 'users', uid))
-    const me = mySnap.data() as UserProfile
-    setMyProfile(me)
+    if (!uid) { setError('Not logged in.'); setLoading(false); return }
+    try {
+      const mySnap = await getDoc(doc(db, 'users', uid))
+      if (!mySnap.exists()) { setError('Profile not found — please complete your profile first.'); setLoading(false); return }
+      const me = mySnap.data() as UserProfile
+      setMyProfile(me)
 
-    const all = await getDocs(collection(db, 'users'))
-    const candidates: UserProfile[] = []
-    all.forEach(d => { if (d.id !== uid) candidates.push(d.data() as UserProfile) })
+      const all = await getDocs(collection(db, 'users'))
+      const candidates: UserProfile[] = []
+      all.forEach(d => { if (d.id !== uid) candidates.push(d.data() as UserProfile) })
 
-    const results = computeMatches(me, candidates)
-    setMatches(results)
-    setLoading(false)
+      if (candidates.length === 0) {
+        setMatches([])
+        setLoading(false)
+        return
+      }
+
+      const results = computeMatches(me, candidates)
+      setMatches(results)
+    } catch (e: unknown) {
+      setError('Failed to load matches. Please check your connection and try again.')
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const startChat = async (m: MatchResult) => {
@@ -69,6 +83,11 @@ export default function MatchPage() {
 
       {loading ? (
         <p style={{ color: 'var(--text2)' }}>Finding your best matches…</p>
+      ) : error ? (
+        <div className={s.empty}>
+          <span style={{ fontSize: 48 }}>😕</span>
+          <p style={{ color: 'var(--text2)', marginTop: 12 }}>{error}</p>
+        </div>
       ) : matches.length === 0 ? (
         <div className={s.empty}>
           <span style={{ fontSize: 48 }}>😕</span>
