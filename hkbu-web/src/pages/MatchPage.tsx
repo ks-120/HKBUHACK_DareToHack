@@ -21,13 +21,21 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   )
 }
 
+// ── Extended match result with icebreaker ─────────────────────────────────
+interface MatchResultEx extends MatchResult {
+  icebreaker?: string
+  bio?: string
+  yearOfStudy?: string
+  major?: string
+}
+
 export default function MatchPage() {
   const nav = useNavigate()
-  const [matches, setMatches]   = useState<MatchResult[]>([])
+  const [matches, setMatches]     = useState<MatchResultEx[]>([])
   const [myProfile, setMyProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading]   = useState(true)
-  const [error, setError]       = useState('')
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [loading, setLoading]     = useState(true)
+  const [error, setError]         = useState('')
+  const [expanded, setExpanded]   = useState<string | null>(null)
 
   useEffect(() => { loadMatches() }, [])
 
@@ -44,14 +52,23 @@ export default function MatchPage() {
       const candidates: UserProfile[] = []
       all.forEach(d => { if (d.id !== uid) candidates.push(d.data() as UserProfile) })
 
-      if (candidates.length === 0) {
-        setMatches([])
-        setLoading(false)
-        return
-      }
+      if (candidates.length === 0) { setMatches([]); setLoading(false); return }
 
       const results = computeMatches(me, candidates)
-      setMatches(results)
+
+      // Enrich each result with icebreaker / bio / basic info from the raw candidate data
+      const enriched: MatchResultEx[] = results.map(r => {
+        const full = candidates.find(c => c.uid === r.uid)
+        return {
+          ...r,
+          icebreaker: full?.icebreaker ?? '',
+          bio:        full?.bio ?? '',
+          yearOfStudy: full?.yearOfStudy ?? '',
+          major:       full?.major ?? '',
+        }
+      })
+
+      setMatches(enriched)
     } catch (e: unknown) {
       setError('Failed to load matches. Please check your connection and try again.')
       console.error(e)
@@ -60,12 +77,12 @@ export default function MatchPage() {
     }
   }
 
-  const startChat = async (m: MatchResult) => {
+  const startChat = async (m: MatchResultEx) => {
     const myUid = auth.currentUser!.uid
     const matchId = [myUid, m.uid].sort().join('_')
     await setDoc(doc(db, 'chats', matchId), {
       participants: [myUid, m.uid].sort(),
-      participantNames: { [myUid]: myProfile?.nickname ?? 'Me', [m.uid]: m.nickname },
+      participantNames:  { [myUid]: myProfile?.nickname ?? 'Me', [m.uid]: m.nickname },
       participantPhotos: { [myUid]: myProfile?.photoURL ?? '', [m.uid]: m.photoURL ?? '' },
       [`unread_${myUid}`]: 0,
       [`unread_${m.uid}`]: 0,
@@ -78,7 +95,7 @@ export default function MatchPage() {
       <button className={s.backBtn} onClick={() => nav('/main')}>← Back</button>
       <h2 className={s.pageTitle}>Match a Buddy 🤝</h2>
       <p className={s.pageSub}>
-        Ranked by interests, study style, personality, goals, location &amp; faculty
+        Ranked by interests, study style, personality, goals &amp; 
       </p>
 
       {loading ? (
@@ -98,7 +115,7 @@ export default function MatchPage() {
       ) : (
         <div className={s.matchGrid}>
           {matches.map(m => {
-            const pct = Math.round(m.score.total * 100)
+            const pct   = Math.round(m.score.total * 100)
             const color = matchColor(m.score.total)
             const label = matchLabel(m.score.total)
             const isOpen = expanded === m.uid
@@ -116,8 +133,40 @@ export default function MatchPage() {
                     <div className={s.matchScore} style={{ color }}>
                       {label} · {pct}%
                     </div>
+                    {(m.major || m.yearOfStudy) && (
+                      <div style={{ fontSize: 11, color: 'var(--text2)', marginTop: 2 }}>
+                        📚 {[m.major, m.yearOfStudy].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {/* Bio */}
+                {m.bio && (
+                  <p style={{
+                    fontSize: 13, color: 'var(--text3)', lineHeight: 1.5,
+                    marginBottom: 10, fontStyle: 'italic',
+                  }}>
+                    "{m.bio}"
+                  </p>
+                )}
+
+                {/* Icebreaker */}
+                {m.icebreaker && (
+                  <div style={{
+                    background: 'linear-gradient(135deg, #fff8f0, #fff3e0)',
+                    border: '1px solid var(--accent2)',
+                    borderRadius: 10, padding: '10px 12px',
+                    marginBottom: 12,
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent2)', marginBottom: 4 }}>
+                      ❄️ Icebreaker
+                    </div>
+                    <div style={{ fontSize: 13, color: 'var(--accent)', fontStyle: 'italic' }}>
+                      "{m.icebreaker}"
+                    </div>
+                  </div>
+                )}
 
                 {/* Shared interests chips */}
                 {m.sharedInterests.length > 0 && (
@@ -130,7 +179,7 @@ export default function MatchPage() {
 
                 {/* Shared study styles */}
                 {m.sharedStudyStyles.length > 0 && (
-                  <div style={{ marginBottom: 10 }}>
+                  <div style={{ marginBottom: 8 }}>
                     <span style={{ fontSize: 11, color: 'var(--text2)', fontWeight: 600 }}>
                       📚 Study style: {m.sharedStudyStyles.join(', ')}
                     </span>
@@ -160,10 +209,10 @@ export default function MatchPage() {
 
                 {isOpen && (
                   <div style={{ marginBottom: 14 }}>
-                    <ScoreBar label="Interests"     value={m.score.interests} />
-                    <ScoreBar label="Study Style"   value={m.score.studyStyle} />
-                    <ScoreBar label="Personality"   value={m.score.personality} />
-                    <ScoreBar label="Buddy Goals"   value={m.score.buddyGoals} />
+                    <ScoreBar label="Interests"   value={m.score.interests} />
+                    <ScoreBar label="Study Style" value={m.score.studyStyle} />
+                    <ScoreBar label="Personality" value={m.score.personality} />
+                    <ScoreBar label="Buddy Goals" value={m.score.buddyGoals} />
                     <div style={{
                       marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)',
                       display: 'flex', justifyContent: 'space-between',

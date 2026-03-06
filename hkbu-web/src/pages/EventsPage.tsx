@@ -152,14 +152,30 @@ export default function EventsPage() {
     return isNaN(d.getTime()) ? null : d
   }
 
-  // ── RSVP ────────────────────────────────────────────────────────────────
-  const handleRSVP = async (ev: Event) => {
+  // ── check if event is in the future ──────────────────────────────────────
+  const isFuture = (date: string): boolean => {
+    const eventDate = new Date(date)
+    return eventDate > new Date()
+  }
+
+  // ── Join / Withdraw ──────────────────────────────────────────────────────
+  const handleJoin = async (ev: Event) => {
     if (!uid) return
-    if (ev.rsvpedBy?.includes(uid)) return
-    await updateDoc(doc(db, 'events', ev.id), {
-      rsvpCount: increment(1),
-      rsvpedBy: [...(ev.rsvpedBy ?? []), uid],
-    })
+    const going = ev.rsvpedBy?.includes(uid)
+    if (going) {
+      const confirmed = window.confirm(`Remove yourself from "${ev.title}"?`)
+      if (!confirmed) return
+      await updateDoc(doc(db, 'events', ev.id), {
+        rsvpCount: increment(-1),
+        rsvpedBy: (ev.rsvpedBy ?? []).filter(id => id !== uid),
+      })
+    } else {
+      // Join
+      await updateDoc(doc(db, 'events', ev.id), {
+        rsvpCount: increment(1),
+        rsvpedBy: [...(ev.rsvpedBy ?? []), uid],
+      })
+    }
   }
 
   // ── Create ───────────────────────────────────────────────────────────────
@@ -231,8 +247,8 @@ export default function EventsPage() {
     await deleteDoc(doc(db, 'events', ev.id))
   }
 
-  const official = events.filter(e => e.source !== 'student')
-  const student  = events.filter(e => e.source === 'student')
+  const official = events.filter(e => e.source !== 'student' && isFuture(e.date))
+  const student  = events.filter(e => e.source === 'student' && isFuture(e.date))
   const visible  = tab === 'official' ? official : student
 
   // ── card ─────────────────────────────────────────────────────────────────
@@ -274,7 +290,7 @@ export default function EventsPage() {
                 </a>
               )}
 
-              {/* owner: edit + delete. others: RSVP */}
+              {/* owner: edit + delete. others: Join / Withdraw */}
               {isOwner ? (
                 <>
                   <button className={s.btnEdit} onClick={() => openEdit(ev)}>✏️ Edit</button>
@@ -287,10 +303,11 @@ export default function EventsPage() {
               ) : (
                 <button
                   className={going ? s.btnDone : s.btnAccent2}
-                  onClick={() => handleRSVP(ev)}
-                  disabled={!!going}
+                  onClick={() => handleJoin(ev)}
+                  onMouseEnter={e => { if (going) e.currentTarget.textContent = 'Withdraw' }}
+                  onMouseLeave={e => { if (going) e.currentTarget.textContent = '✓ Going' }}
                 >
-                  {going ? '✓ Going' : 'RSVP'}
+                  {going ? '✓ Going' : "I'm Going"}
                 </button>
               )}
             </div>

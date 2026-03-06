@@ -73,19 +73,28 @@
 }
 .modalTextarea:focus { border-color: var(--accent); outline: none; }
 .modalTextarea::placeholder { color: #aab; }
-.tagRow { display: flex; flex-wrap: wrap; gap: 8px; }
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .tag {
-  padding: 6px 13px; border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 20px;
   background: var(--bg3); border: 1.5px solid var(--border);
-  color: var(--text2); font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all .15s;
+  color: var(--text2); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
 }
-.tag:hover { border-color: var(--accent); color: var(--accent); }
+.tag:hover { border-color: var(--accent); color: var(--accent); background: #eef2ff; }
 .tagActive {
-  padding: 6px 13px; border-radius: 20px;
-  background: var(--accent); border: 1.5px solid var(--accent);
-  color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  /* colour is set via inline style in TSX */
+  border: 1.5px solid currentColor;
+  transition: opacity .15s;
 }
+.tagActive:hover { opacity: .85; }
 .modalActions { display: flex; gap: 10px; justify-content: flex-end; }
 .btnCancel {
   padding: 9px 20px; border-radius: 20px;
@@ -106,15 +115,16 @@
 /* ── Sort + filter bar ── */
 .toolbar {
   background: #fff; border: 1.5px solid var(--border);
-  border-radius: 4px; padding: 8px 14px;
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 14px; flex-wrap: wrap;
+  border-radius: 12px; padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 14px;
   box-shadow: var(--shadow);
 }
-.toolbarLabel { color: var(--text2); font-size: 12px; font-weight: 700; margin-right: 4px; text-transform: uppercase; letter-spacing: .5px; }
 
-/* ── Sort tabs (replaces old sortBtn) ── */
-.sortTabs { display: flex; gap: 4px; }
+/* Sort tabs row */
+.sortTabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+}
 .sortTab {
   padding: 7px 14px; border-radius: 20px;
   background: none; border: 1.5px solid transparent;
@@ -128,13 +138,43 @@
   font-weight: 700;
   background: var(--bg3);
 }
-/* Per-tab accent colours when active */
-.sortTab_hot.sortTabActive   { background: #fff3e0; border-color: #f47c20; color: #f47c20; }
-.sortTab_new.sortTabActive   { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
-.sortTab_top.sortTabActive   { background: #fce4ec; border-color: #c62828; color: #c62828; }
-.sortTab_comments.sortTabActive { background: #e3f2fd; border-color: #1565c0; color: #1565c0; }
+.sortTab_hot.sortTabActive     { background: #fff3e0; border-color: #f47c20; color: #f47c20; }
+.sortTab_new.sortTabActive     { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+.sortTab_top.sortTabActive     { background: #fce4ec; border-color: #c62828; color: #c62828; }
+.sortTab_comments.sortTabActive{ background: #e3f2fd; border-color: #1565c0; color: #1565c0; }
 
-.filterTags { display: flex; flex-wrap: wrap; gap: 6px; }
+/* divider between sort and filter */
+.divider {
+  height: 1px; background: var(--border); width: 100%; margin: 0;
+}
+
+/* Category filter pills — horizontally scrollable */
+.filterTags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.filterTags::-webkit-scrollbar { display: none; }
+
+.filterTag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 20px; white-space: nowrap;
+  background: var(--bg3); border: 1.5px solid var(--border);
+  color: var(--text2); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+.filterTag:hover { border-color: var(--accent); color: var(--accent); background: #eef2ff; }
+
+.filterTagActive {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 20px; white-space: nowrap;
+  font-size: 12px; font-weight: 800;
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+  border: 1.5px solid currentColor;
+}
 
 /* ── Post card — Reddit style ── */
 .postCard {
@@ -206,9 +246,17 @@
 .postTags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .postTag {
   padding: 3px 10px; border-radius: 20px;
-  background: #eef1fc; border: 1px solid #c5cef0;
-  color: var(--accent3); font-size: 11px; font-weight: 700;
+  background: #eef2ff; border: 1px solid #bac8ff;
+  color: #3b5bdb; font-size: 11px; font-weight: 700;
 }
+/* Per-tag colour overrides applied via data attribute */
+.postTag[data-tag='#Study']      { background: #eef2ff; border-color: #bac8ff; color: #3b5bdb; }
+.postTag[data-tag='#Event']      { background: #fff9db; border-color: #ffe066; color: #e67700; }
+.postTag[data-tag='#Groupmates'] { background: #e6fcf5; border-color: #96f2d7; color: #0ca678; }
+.postTag[data-tag='#Housing']    { background: #fff0f6; border-color: #faa2c1; color: #c2255c; }
+.postTag[data-tag='#Sport']      { background: #e7f5ff; border-color: #a5d8ff; color: #1971c2; }
+.postTag[data-tag='#Food']       { background: #fff4e6; border-color: #ffc078; color: #d9480f; }
+.postTag[data-tag='#Misc']       { background: #f3f0ff; border-color: #b197fc; color: #6741d9; }
 .postFooter {
   display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
 }

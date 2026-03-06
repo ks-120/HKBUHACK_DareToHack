@@ -4,7 +4,15 @@ import { auth, db } from '../config/firebaseConfig'
 import { Post, Comment } from '../types'
 import s from './FeedPage.module.css'
 
-const TAGS = ['#Study', '#Event', '#Groupmates', '#Housing', '#Sport', '#Food', '#Misc']
+const TAGS = [
+  { label: '#Study',      emoji: '📚', color: '#3b5bdb', bg: '#eef2ff', border: '#bac8ff' },
+  { label: '#Event',      emoji: '🎉', color: '#e67700', bg: '#fff9db', border: '#ffe066' },
+  { label: '#Groupmates', emoji: '🤝', color: '#0ca678', bg: '#e6fcf5', border: '#96f2d7' },
+  { label: '#Housing',    emoji: '🏠', color: '#c2255c', bg: '#fff0f6', border: '#faa2c1' },
+  { label: '#Sport',      emoji: '🏃', color: '#1971c2', bg: '#e7f5ff', border: '#a5d8ff' },
+  { label: '#Food',       emoji: '🍜', color: '#d9480f', bg: '#fff4e6', border: '#ffc078' },
+  { label: '#Misc',       emoji: '💬', color: '#6741d9', bg: '#f3f0ff', border: '#b197fc' },
+]
 const SORT_OPTIONS = [
   { key: 'hot',      label: '🔥 Hot',        title: 'Popular recently' },
   { key: 'new',      label: '✨ New',         title: 'Most recent first' },
@@ -287,12 +295,12 @@ export default function FeedPage() {
             />
             <div className={s.tagRow}>
               {TAGS.map(t => (
-                <button key={t} type="button"
-                  className={selectedTags.includes(t) ? s.tagActive : s.tag}
+                <button key={t.label} type="button"
+                  className={selectedTags.includes(t.label) ? s.tagActive : s.tag}
                   onClick={() => setSelectedTags(prev =>
-                    prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]
+                    prev.includes(t.label) ? prev.filter(x => x !== t.label) : [...prev, t.label]
                   )}>
-                  {t}
+                  {t.emoji} {t.label}
                 </button>
               ))}
             </div>
@@ -319,14 +327,24 @@ export default function FeedPage() {
         </div>
         <div className={s.divider} />
         <div className={s.filterTags}>
-          <button className={filter === 'All' ? s.filterTagActive : s.filterTag}
-            onClick={() => setFilter('All')}>All</button>
-          {TAGS.map(t => (
-            <button key={t}
-              className={filter === t ? s.filterTagActive : s.filterTag}
-              onClick={() => setFilter(t)}>{t}
-            </button>
-          ))}
+          {/* All pill */}
+          <button
+            className={filter === 'All' ? s.filterTagActive : s.filterTag}
+            style={filter === 'All' ? { background: '#0d2760', color: '#fff', borderColor: '#0d2760' } : {}}
+            onClick={() => setFilter('All')}>
+            🗂 All
+          </button>
+          {TAGS.map(t => {
+            const active = filter === t.label
+            return (
+              <button key={t.label}
+                className={active ? s.filterTagActive : s.filterTag}
+                style={active ? { background: t.bg, color: t.color, borderColor: t.border } : {}}
+                onClick={() => setFilter(t.label)}>
+                {t.emoji} {t.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -384,7 +402,9 @@ export default function FeedPage() {
 
               {p.tags?.length > 0 && (
                 <div className={s.postTags}>
-                  {p.tags.map(t => <span key={t} className={s.postTag}>{t}</span>)}
+                  {p.tags.map(t => <span key={t} className={s.postTag} data-tag={t}>{
+                    (() => { const found = TAGS.find(x => x.label === t); return found ? `${found.emoji} ${t}` : t })()
+                  }</span>)}
                 </div>
               )}
 
