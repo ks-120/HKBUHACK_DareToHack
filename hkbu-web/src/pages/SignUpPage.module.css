@@ -1,0 +1,331 @@
+/* ── Wizard shell ── */
+.wizardWrap {
+  min-height: 100vh;
+  background: linear-gradient(150deg, #0d2760 0%, #1a3a8f 60%, #f5a623 150%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
+}
+.wizardCard {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%; max-width: 580px;
+  box-shadow: 0 12px 56px rgba(13,39,96,0.22);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: fadeUp .3s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Progress bar ── */
+.progressBar {
+  height: 5px;
+  background: #e8eaf6;
+}
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #1a3a8f, #f5a623);
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Step counter pills ── */
+.stepRow {
+  display: flex; align-items: center; gap: 6px;
+  padding: 14px 28px 0;
+  flex-wrap: wrap;
+}
+.stepPill {
+  font-size: 10px; font-weight: 800; letter-spacing: .5px;
+  padding: 3px 10px; border-radius: 12px;
+  background: #e8eaf6; color: #7986cb;
+  transition: background .2s, color .2s;
+}
+.stepPillActive {
+  background: #1a3a8f; color: #fff;
+}
+.stepPillDone {
+  background: #e8f5e9; color: #2e7d32;
+}
+.stepDivider {
+  flex: 1; height: 1.5px; background: #e8eaf6; border-radius: 1px;
+  min-width: 10px;
+}
+
+/* ── Section body ── */
+.sectionBody {
+  padding: 28px 32px 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 180px);
+}
+.sectionEmoji { font-size: 44px; line-height: 1; }
+.sectionTitle {
+  font-size: 22px; font-weight: 800; color: #0d2760;
+  margin-top: 4px; line-height: 1.25;
+}
+.sectionSub {
+  font-size: 13px; color: #6b7a99; line-height: 1.6;
+  margin-top: -10px;
+}
+
+/* ── Question block ── */
+.qBlock { display: flex; flex-direction: column; gap: 8px; }
+.qLabel {
+  font-size: 13px; font-weight: 700; color: #1a3a8f;
+  display: flex; align-items: center; gap: 6px;
+}
+.qLabel span { font-weight: 500; color: #9e9e9e; font-size: 11px; }
+.qHint { font-size: 11px; color: #9e9e9e; margin-top: -4px; }
+
+/* ── Input / Select ── */
+.qInput, .qSelect {
+  background: #f4f6fb; border: 1.5px solid #dde3f0;
+  border-radius: 10px; padding: 12px 14px;
+  color: #0d2760; font-size: 15px; width: 100%;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.qInput:focus, .qSelect:focus {
+  border-color: #1a3a8f; outline: none; background: #fff;
+}
+.qInput::placeholder { color: #b0bec5; }
+.qTextarea {
+  background: #f4f6fb; border: 1.5px solid #dde3f0;
+  border-radius: 10px; padding: 12px 14px;
+  color: #0d2760; font-size: 14px; width: 100%;
+  font-family: inherit; resize: vertical; min-height: 72px;
+  transition: border-color .15s; line-height: 1.6;
+}
+.qTextarea:focus { border-color: #1a3a8f; outline: none; background: #fff; }
+.qTextarea::placeholder { color: #b0bec5; }
+.charCount { font-size: 11px; color: #9e9e9e; text-align: right; margin-top: -4px; }
+
+/* ── Chip multi-select ── */
+.chipGrid { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 7px 14px; border-radius: 20px;
+  background: #f4f6fb; border: 1.5px solid #dde3f0;
+  color: #5c6880; font-size: 13px; cursor: pointer;
+  transition: all .15s; font-weight: 500;
+}
+.chip:hover { border-color: #1a3a8f; color: #1a3a8f; background: #eef1fb; }
+.chipActive {
+  padding: 7px 14px; border-radius: 20px;
+  background: #1a3a8f; border: 1.5px solid #1a3a8f;
+  color: #fff; font-size: 13px; cursor: pointer; font-weight: 700;
+}
+.chipLimit { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+/* ── Visibility toggle ── */
+.visRow {
+  display: flex; align-items: center; gap: 8px;
+  background: #f4f6fb; border-radius: 10px;
+  padding: 10px 14px; margin-top: -4px;
+  font-size: 12px; color: #6b7a99; font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  border: 1.5px solid #dde3f0;
+  transition: border-color .15s;
+}
+.visRow:hover { border-color: #1a3a8f; }
+.visToggle {
+  width: 32px; height: 18px; border-radius: 9px;
+  background: #cfd8dc; position: relative;
+  transition: background .2s; flex-shrink: 0;
+}
+.visToggleOn { background: #2e7d32; }
+.visToggleKnob {
+  position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.visToggleKnobOn { transform: translateX(14px); }
+
+/* ── Personality sliders ── */
+.sliderBlock { display: flex; flex-direction: column; gap: 14px; }
+.sliderRow { display: flex; flex-direction: column; gap: 6px; }
+.sliderLabels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: #9e9e9e;
+}
+.slider {
+  -webkit-appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: #dde3f0; outline: none; cursor: pointer;
+  accent-color: #1a3a8f;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #1a3a8f; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(26,58,143,.35);
+  border: 2px solid #fff;
+}
+.sliderValue {
+  font-size: 12px; font-weight: 800; color: #1a3a8f;
+  text-align: center;
+}
+.sliderEmojis {
+  display: flex; justify-content: space-between;
+  font-size: 15px;
+}
+
+/* ── Rank top-3 picker ── */
+.rankGrid { display: flex; flex-direction: column; gap: 6px; }
+.rankItem {
+  display: flex; align-items: center; gap: 10px;
+  background: #f4f6fb; border: 1.5px solid #dde3f0;
+  border-radius: 10px; padding: 10px 14px;
+  cursor: pointer; transition: all .15s;
+  font-size: 13px; color: #5c6880; font-weight: 500;
+}
+.rankItem:hover { border-color: #1a3a8f; color: #1a3a8f; }
+.rankItemActive {
+  background: #eef1fb; border-color: #1a3a8f;
+  color: #0d2760; font-weight: 700;
+}
+.rankBadge {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #1a3a8f; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0;
+}
+.rankBadgeGhost {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #dde3f0; flex-shrink: 0;
+}
+
+/* ── Review section ── */
+.reviewGrid { display: flex; flex-direction: column; gap: 10px; }
+.reviewCard {
+  background: #f4f6fb; border-radius: 14px; padding: 14px 16px;
+  border: 1.5px solid #dde3f0;
+}
+.reviewCardTitle {
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .5px; color: #7986cb; margin-bottom: 8px;
+}
+.reviewRow {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; padding: 4px 0;
+  border-bottom: 1px solid #dde3f0;
+}
+.reviewRow:last-child { border-bottom: none; }
+.reviewKey { font-size: 12px; color: #6b7a99; font-weight: 600; flex-shrink: 0; }
+.reviewVal {
+  font-size: 12px; color: #0d2760; font-weight: 700;
+  text-align: right; flex: 1;
+}
+.reviewChips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.reviewChip {
+  padding: 3px 10px; border-radius: 12px;
+  background: #1a3a8f; color: #fff;
+  font-size: 11px; font-weight: 700;
+}
+
+/* ── Navigation footer ── */
+.wizardFooter {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px 24px; gap: 12px;
+  border-top: 1px solid #f0f2f8;
+  flex-shrink: 0;
+}
+.btnBack {
+  background: none; border: 1.5px solid #dde3f0;
+  color: #6b7a99; border-radius: 12px;
+  padding: 11px 22px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.btnBack:hover { border-color: #1a3a8f; color: #1a3a8f; }
+.btnNext {
+  background: #1a3a8f; color: #fff; border-radius: 12px;
+  padding: 11px 30px; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+  box-shadow: 0 4px 16px rgba(26,58,143,.25);
+  flex: 1; max-width: 260px;
+}
+.btnNext:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+.btnNext:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+.btnSkip {
+  background: none; border: none;
+  color: #9e9e9e; font-size: 13px; font-weight: 600;
+  cursor: pointer; padding: 4px 8px;
+  transition: color .15s;
+}
+.btnSkip:hover { color: #1a3a8f; }
+
+/* ── Consent / privacy ── */
+.consentBox {
+  background: #f4f6fb; border-radius: 14px; padding: 16px;
+  border: 1.5px solid #dde3f0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.consentList {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.consentList li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: #3d4f6e; line-height: 1.5;
+}
+.consentList li::before {
+  content: '🔒'; flex-shrink: 0; font-size: 14px;
+}
+.consentRow {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; margin-top: 4px;
+  font-size: 14px; color: #3d4f6e; font-weight: 600;
+}
+.consentRow input { accent-color: #1a3a8f; width: 17px; height: 17px; cursor: pointer; }
+
+/* ── Welcome / done screens ── */
+.welcomeBody {
+  padding: 40px 32px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 20px; text-align: center;
+}
+.welcomeEmoji { font-size: 72px; }
+.welcomeTitle { font-size: 28px; font-weight: 800; color: #0d2760; line-height: 1.2; }
+.welcomeSub { font-size: 15px; color: #6b7a99; line-height: 1.7; max-width: 400px; }
+.welcomeFeatures {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; width: 100%;
+}
+.featureBox {
+  background: #f4f6fb; border-radius: 14px; padding: 14px;
+  border: 1.5px solid #dde3f0;
+  display: flex; flex-direction: column; gap: 4px;
+  text-align: left;
+}
+.featureBoxEmoji { font-size: 22px; }
+.featureBoxTitle { font-size: 13px; font-weight: 700; color: #0d2760; }
+.featureBoxSub { font-size: 11px; color: #9e9e9e; }
+
+/* ── Error ── */
+.errMsg { font-size: 13px; color: #c62828; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+
+/* ── Avatar centre ── */
+.avatarCenter { display: flex; justify-content: center; margin: 4px 0 8px; }
+
+/* ── Section transition ── */
+.slideIn {
+  animation: slideIn .25s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .sectionBody { padding: 20px 20px 16px; }
+  .wizardFooter { padding: 12px 20px 20px; }
+  .stepRow { padding: 10px 20px 0; }
+  .welcomeFeatures { grid-template-columns: 1fr; }
+  .welcomeBody { padding: 32px 20px; }
+}

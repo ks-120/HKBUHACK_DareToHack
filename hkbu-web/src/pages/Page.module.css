@@ -1,0 +1,492 @@
+/* ── Layout ── */
+.pageWrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 36px 28px 64px;
+  min-height: 100vh;
+}
+
+/* ── Welcome ── */
+.welcomeWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px;
+  gap: 48px;
+  background: linear-gradient(150deg, #0d2760 0%, #1a3a8f 60%, #f5a623 150%);
+}
+.hero { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.heroEmoji { font-size: 88px; }
+.heroTitle { font-size: 48px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+.heroSub { font-size: 18px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+.heroBtns { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 360px; }
+
+/* ── Auth ── */
+.authWrap {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 24px;
+  background: linear-gradient(150deg, #0d2760 0%, #1a3a8f 60%, #f5a623 150%);
+}
+.authCard {
+  background: #fff; border-radius: 20px; padding: 40px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 8px 40px rgba(13,39,96,0.18);
+}
+.authTitle { font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 6px; }
+.authSub { color: var(--text2); font-size: 14px; margin-bottom: 28px; }
+.form { display: flex; flex-direction: column; gap: 6px; }
+.switchLink { color: var(--text2); text-align: center; margin-top: 20px; font-size: 14px; }
+.switchLink span { color: var(--accent2); cursor: pointer; font-weight: 600; }
+.switchLink span:hover { text-decoration: underline; }
+
+/* ── Main dashboard ── */
+.mainHeader {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 36px; gap: 16px; flex-wrap: wrap;
+}
+.greeting { font-size: 30px; font-weight: 800; color: var(--accent); }
+.greetingSub { color: var(--text2); font-size: 14px; margin-top: 4px; }
+.pointsBadge {
+  background: #fff7ed; border: 1.5px solid var(--gold); border-radius: 12px;
+  padding: 8px 16px; color: var(--accent2); font-weight: 700; font-size: 15px;
+  white-space: nowrap;
+}
+.cardGrid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+}
+.featureCard {
+  background: #fff; border-radius: 16px; padding: 28px 24px;
+  border: 1px solid var(--border); border-top-width: 4px;
+  text-align: left; transition: transform .15s, box-shadow .15s;
+  display: flex; flex-direction: column; gap: 8px; cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.featureCard:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(13,39,96,0.13); }
+.featureEmoji { font-size: 36px; }
+.featureTitle { font-size: 18px; font-weight: 700; color: var(--accent); }
+.featureDesc { color: var(--text2); font-size: 13px; line-height: 1.5; }
+
+/* ── Shared page header ── */
+.pageTitle { font-size: 26px; font-weight: 800; color: var(--accent); margin-bottom: 6px; }
+.pageSub { color: var(--text2); font-size: 14px; margin-bottom: 28px; }
+
+/* ── Buttons ── */
+.btnPrimary {
+  background: var(--accent); color: #fff; border-radius: 12px;
+  padding: 13px 20px; font-size: 15px; font-weight: 700;
+  transition: opacity .15s; width: 100%; margin-top: 8px;
+  box-shadow: 0 4px 16px rgba(13,39,96,0.18);
+}
+.btnPrimary:hover:not(:disabled) { opacity: .88; }
+.btnPrimary:disabled { opacity: .45; cursor: not-allowed; }
+.btnGhost {
+  background: none; border: 1.5px solid var(--border); color: var(--text2);
+  border-radius: 12px; padding: 13px 20px; font-size: 15px;
+  width: 100%; transition: border-color .15s, color .15s;
+}
+.btnGhost:hover { border-color: var(--accent); color: var(--accent); }
+.btnAccent2 {
+  background: var(--accent2); color: #fff; border-radius: 10px;
+  padding: 8px 18px; font-size: 13px; font-weight: 700; transition: opacity .15s;
+}
+.btnAccent2:hover { opacity: .85; }
+.btnDone {
+  background: var(--bg3); color: var(--text2); border-radius: 10px;
+  padding: 8px 18px; font-size: 13px; font-weight: 700; cursor: default;
+}
+.backBtn {
+  background: none; color: var(--accent); font-size: 15px;
+  padding: 0; margin-bottom: 20px; display: inline-block; font-weight: 600;
+}
+.backBtn:hover { text-decoration: underline; }
+
+/* ── Edit event btn ── */
+.btnEdit {
+  padding: 8px 16px; border-radius: 10px;
+  background: none; border: 1.5px solid var(--accent);
+  color: var(--accent); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.btnEdit:hover { background: var(--accent); color: #fff; }
+
+/* ── Form elements ── */
+.label {
+  color: var(--text2); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .5px; margin-top: 12px;
+}
+.input {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; color: var(--accent); font-size: 15px; width: 100%;
+  transition: border-color .15s;
+}
+.input:focus { border-color: var(--accent); }
+.input::placeholder { color: #aab; }
+.errorMsg { color: var(--accent2); font-size: 13px; margin-top: 4px; }
+.consentRow {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+  color: var(--text2); font-size: 14px; cursor: pointer;
+}
+.consentRow input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+.link { color: var(--accent2); cursor: pointer; font-weight: 600; }
+.link:hover { text-decoration: underline; }
+
+/* ── Chips ── */
+.chipGrid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip {
+  padding: 7px 14px; border-radius: 20px; background: var(--bg3);
+  border: 1.5px solid var(--border); color: var(--text2); font-size: 13px;
+  cursor: pointer; transition: all .15s;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chipActive {
+  padding: 7px 14px; border-radius: 20px;
+  background: var(--accent); border: 1.5px solid var(--accent);
+  color: #fff; font-size: 13px; cursor: pointer; font-weight: 600;
+}
+.tagChip {
+  display: inline-block; padding: 4px 10px; border-radius: 10px;
+  background: #fff3e0; border: 1px solid var(--accent2);
+  color: var(--accent2); font-size: 12px; font-weight: 600;
+}
+
+/* ── Avatar ── */
+.avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; flex-shrink: 0;
+}
+.avatarImg {
+  width: 44px; height: 44px; border-radius: 50%;
+  object-fit: cover; flex-shrink: 0;
+  border: 2px solid var(--accent);
+}
+
+/* ── Match ── */
+.matchGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.matchCard {
+  background: #fff; border-radius: 16px; padding: 20px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.matchTop { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.matchName { color: var(--accent); font-size: 16px; font-weight: 700; }
+.matchScore { color: var(--accent2); font-size: 13px; margin-top: 2px; font-weight: 600; }
+
+/* ── Events ── */
+.eventList { display: flex; flex-direction: column; gap: 14px; }
+.eventCard {
+  background: #fff; border-radius: 16px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.eventImg {
+  width: 100%; height: 180px; object-fit: cover;
+  display: block; border-bottom: 1px solid var(--border);
+}
+.eventImgFallback {
+  width: 100%; height: 100px;
+  background: linear-gradient(135deg, #0d2760, #1a3a8f);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+}
+.eventBody { padding: 18px 20px; }
+.eventTop { display: flex; gap: 14px; margin-bottom: 10px; }
+.eventEmoji { font-size: 40px; flex-shrink: 0; }
+.eventInfo { flex: 1; }
+.eventTitle { font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+.eventMeta { color: var(--text2); font-size: 12px; line-height: 1.8; }
+.eventDesc { color: var(--text3); font-size: 14px; line-height: 1.6; margin-bottom: 14px; }
+.eventFooter { display: flex; justify-content: space-between; align-items: center; }
+.rsvpCount { color: var(--text2); font-size: 13px; }
+
+/* ── Event tabs ── */
+.eventTabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  overflow: hidden; background: var(--bg);
+}
+.eventTab {
+  flex: 1; padding: 10px 0; font-size: 13px; font-weight: 700;
+  color: var(--text2); background: none; border: none; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.eventTab:hover { background: var(--bg3); color: var(--accent); }
+.eventTabActive {
+  flex: 1; padding: 10px 0; font-size: 13px; font-weight: 700;
+  color: #fff; background: var(--accent); border: none; cursor: pointer;
+}
+
+/* ── Create event button ── */
+.createEventBtn {
+  width: 100%; padding: 12px; border-radius: 12px;
+  border: 2px dashed var(--border); background: none;
+  color: var(--text2); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .15s; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.createEventBtn:hover { border-color: var(--accent2); color: var(--accent2); background: #fff8f0; }
+
+/* ── Create event modal ── */
+.eventModalOverlay {
+  position: fixed; inset: 0; background: rgba(13,39,96,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 20px;
+}
+.eventModal {
+  background: #fff; border-radius: 16px;
+  width: 100%; max-width: 520px; padding: 28px;
+  display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 8px 48px rgba(13,39,96,0.2);
+  animation: popIn .2s ease; max-height: 90vh; overflow-y: auto;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.eventModalTitle { font-size: 20px; font-weight: 800; color: var(--accent); }
+.eventModalLabel {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px;
+}
+.eventModalInput {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; color: var(--accent);
+  font-size: 14px; font-family: inherit; transition: border-color .15s;
+}
+.eventModalInput:focus { border-color: var(--accent); outline: none; }
+.eventModalInput::placeholder { color: #aab; }
+.eventModalTextarea {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; color: var(--accent);
+  font-size: 14px; font-family: inherit; resize: vertical; min-height: 80px;
+  transition: border-color .15s;
+}
+.eventModalTextarea:focus { border-color: var(--accent); outline: none; }
+.eventModalTextarea::placeholder { color: #aab; }
+.eventModalRow { display: flex; gap: 12px; }
+.eventModalRow > div { flex: 1; }
+.eventModalActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+.eventModalCancel {
+  padding: 9px 20px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: none;
+  color: var(--text2); font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all .15s;
+}
+.eventModalCancel:hover { border-color: var(--accent); color: var(--accent); }
+.eventModalSubmit {
+  padding: 9px 24px; border-radius: 20px;
+  background: var(--accent2); border: none; color: #fff;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+}
+.eventModalSubmit:hover:not(:disabled) { opacity: .85; }
+.eventModalSubmit:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Student event badge ── */
+.studentBadge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #fff3e0; border: 1px solid var(--accent2);
+  color: var(--accent2); font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; margin-bottom: 6px;
+}
+.eventCreator { color: var(--text2); font-size: 12px; margin-top: 4px; }
+
+/* ── Feed ── */
+.composeBox {
+  background: #fff; border-radius: 16px; padding: 20px;
+  border: 1px solid var(--border); margin-bottom: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow);
+}
+.composeInput {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; color: var(--accent); font-size: 15px; resize: vertical;
+  width: 100%; line-height: 1.5;
+}
+.composeInput:focus { border-color: var(--accent); outline: none; }
+.composeInput::placeholder { color: #aab; }
+.composeTags { display: flex; flex-wrap: wrap; gap: 8px; }
+.filterBar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.postList { display: flex; flex-direction: column; gap: 12px; }
+.postCard {
+  background: #fff; border-radius: 14px; padding: 18px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.postHeader { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.postAuthor { color: var(--accent); font-weight: 700; font-size: 14px; }
+.postTime { color: var(--text2); font-size: 12px; margin-left: 8px; }
+.postContent { color: var(--text3); font-size: 15px; line-height: 1.6; margin-bottom: 10px; }
+.postTags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ── Chat ── */
+.chatWrap { display: flex; flex-direction: column; height: 100vh; max-width: 760px; margin: 0 auto; }
+.chatHeader {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  border-bottom: 1px solid var(--border); background: #fff; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(13,39,96,0.06);
+}
+.chatHeaderInfo { display: flex; align-items: center; gap: 10px; flex: 1; }
+.chatHeaderName { color: var(--accent); font-size: 17px; font-weight: 700; }
+.chatMessages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
+.chatEmpty { color: var(--text2); text-align: center; margin-top: 60px; font-size: 16px; }
+.bubbleRowMe { display: flex; justify-content: flex-end; }
+.bubbleRowThem { display: flex; justify-content: flex-start; }
+.bubbleMe {
+  background: var(--accent); color: #fff; border-radius: 18px 18px 4px 18px;
+  padding: 10px 14px; max-width: 70%;
+}
+.bubbleThem {
+  background: #fff; color: var(--text3); border-radius: 18px 18px 18px 4px;
+  padding: 10px 14px; max-width: 70%; border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(13,39,96,0.06);
+}
+.bubbleSender { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+.bubbleText { font-size: 15px; line-height: 1.5; }
+.bubbleTime { font-size: 10px; opacity: .6; margin-top: 4px; text-align: right; }
+.chatInputRow {
+  display: flex; gap: 10px; padding: 14px 20px;
+  border-top: 1px solid var(--border); background: #fff; flex-shrink: 0;
+}
+.chatInput {
+  flex: 1; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 24px; padding: 10px 18px; color: var(--accent); font-size: 15px;
+}
+.chatInput:focus { border-color: var(--accent); outline: none; }
+.chatInput::placeholder { color: #aab; }
+.sendBtn {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--accent);
+  color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: opacity .15s, transform .15s;
+}
+.sendBtn:hover:not(:disabled) { opacity: .85; transform: scale(1.05); }
+.sendBtn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Leaderboard ── */
+.podium {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 12px; padding: 24px 0 20px;
+}
+.podiumSlot { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 160px; }
+.podiumMedal { font-size: 28px; margin-bottom: 6px; }
+.podiumAvatar {
+  width: 52px; height: 52px; border-radius: 50%; background: var(--bg3);
+  border: 2px solid; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 6px;
+}
+.podiumName {
+  color: var(--accent); font-size: 12px; font-weight: 600; text-align: center;
+  margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+}
+.podiumBar {
+  width: 100%; border-radius: 10px; border: 1px solid;
+  display: flex; align-items: center; justify-content: center;
+}
+.leaderList { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.leaderRow {
+  display: flex; align-items: center; gap: 12px; background: #fff;
+  border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.leaderRowMe { border-color: var(--gold); background: #fff8ee; }
+.leaderRank { color: var(--text2); font-weight: 700; font-size: 14px; width: 32px; }
+.leaderName { flex: 1; color: var(--accent); font-size: 15px; font-weight: 600; }
+.leaderPoints { color: var(--accent2); font-size: 14px; font-weight: 700; }
+
+/* ── Privacy modal ── */
+.modalOverlay {
+  position: fixed; inset: 0; background: rgba(13,39,96,0.55);
+  display: flex; align-items: flex-end; justify-content: center; z-index: 100;
+}
+.modalCard {
+  background: #fff; border-radius: 24px 24px 0 0; padding: 32px;
+  width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 -8px 40px rgba(13,39,96,0.12);
+}
+.modalCard h3 { color: var(--accent); font-size: 20px; }
+.privacyList { color: var(--text3); font-size: 14px; line-height: 2; padding-left: 20px; }
+
+/* ── Misc ── */
+.loader { color: var(--text2); padding: 60px 0; text-align: center; font-size: 15px; }
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; padding: 80px 0; color: var(--text2);
+}
+.empty span { font-size: 52px; }
+.empty p { font-size: 16px; text-align: center; line-height: 1.6; }
+
+/* ── Date picker overrides ── */
+.datePickerWrapper { position: relative; width: 100%; }
+.datePickerWrapper :global(.react-datepicker-wrapper) { width: 100%; }
+.datePickerWrapper :global(.react-datepicker__input-container) { width: 100%; }
+.datePickerWrapper :global(.react-datepicker) {
+  font-family: inherit;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(13,39,96,0.14);
+  overflow: hidden;
+}
+.datePickerWrapper :global(.react-datepicker__header) {
+  background: var(--accent);
+  border-bottom: none;
+  padding: 12px 0 8px;
+}
+.datePickerWrapper :global(.react-datepicker__current-month),
+.datePickerWrapper :global(.react-datepicker__day-name) { color: #fff; font-weight: 700; }
+.datePickerWrapper :global(.react-datepicker__navigation-icon::before) { border-color: #fff; }
+.datePickerWrapper :global(.react-datepicker__day--selected),
+.datePickerWrapper :global(.react-datepicker__day--keyboard-selected) {
+  background: var(--accent2) !important;
+  border-radius: 50%;
+  color: #fff !important;
+  font-weight: 700;
+}
+.datePickerWrapper :global(.react-datepicker__day:hover) {
+  background: var(--bg3);
+  border-radius: 50%;
+}
+.datePickerWrapper :global(.react-datepicker__day--today) {
+  font-weight: 800;
+  color: var(--accent2);
+}
+.datePickerWrapper :global(.react-datepicker__day--disabled) { opacity: .35; }
+
+/* ── Inbox list ── */
+.inboxList { display: flex; flex-direction: column; gap: 2px; }
+.inboxRow {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: 14px;
+  background: #fff; border: 1px solid var(--border);
+  cursor: pointer; transition: background .15s; text-align: left; width: 100%;
+  box-shadow: var(--shadow);
+}
+.inboxRow:hover { background: var(--bg3); }
+.inboxAvatar { position: relative; flex-shrink: 0; }
+.inboxAvatarImg {
+  width: 48px; height: 48px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent);
+}
+.inboxAvatarFallback {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700;
+}
+.unreadDot {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--accent2); color: #fff;
+  font-size: 10px; font-weight: 800;
+  min-width: 18px; height: 18px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; border: 2px solid #fff;
+}
+.inboxInfo { flex: 1; overflow: hidden; }
+.inboxName {
+  color: var(--accent); font-size: 15px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.inboxPreview {
+  color: var(--text2); font-size: 13px; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.inboxTime { color: var(--text2); font-size: 11px; flex-shrink: 0; }
