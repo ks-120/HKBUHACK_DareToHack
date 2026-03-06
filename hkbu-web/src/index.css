@@ -21,6 +21,24 @@
   --transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] {
+  --bg:        #0f1117;
+  --bg2:       #1a1d27;
+  --bg3:       #22263a;
+  --accent:    #a8bfff;
+  --accent2:   #f47c20;
+  --accent3:   #7b9ef0;
+  --gold:      #f5a623;
+  --text:      #dce4ff;
+  --text2:     #7a8ab8;
+  --text3:     #b0c0e8;
+  --border:    #2e3450;
+  --shadow:    0 2px 12px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.45);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.55);
+}
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -114,7 +132,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 
 /* ── Skeleton loader ── */
 .skeleton {
-  background: linear-gradient(90deg, #e8ecf8 25%, #f5f7ff 50%, #e8ecf8 75%);
+  background: linear-gradient(90deg, var(--bg3) 25%, var(--bg2) 50%, var(--bg3) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: 8px;

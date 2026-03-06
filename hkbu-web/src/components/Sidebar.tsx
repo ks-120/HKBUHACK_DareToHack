@@ -17,9 +17,9 @@ const NAV_ITEMS = [
   { emoji: '⚙️', label: 'Settings',   path: '/settings' },
 ]
 
-interface Props { profile: UserProfile | null }
+interface Props { profile: UserProfile | null; dark: boolean; setDark: (v: boolean) => void }
 
-export default function Sidebar({ profile }: Props) {
+export default function Sidebar({ profile, dark, setDark }: Props) {
   const nav = useNavigate()
   const { pathname } = useLocation()
   const [totalUnread, setTotalUnread] = useState(0)
@@ -77,6 +77,15 @@ export default function Sidebar({ profile }: Props) {
           )
         })}
       </nav>
+
+      {/* ── Dark mode toggle ── */}
+      <button className={s.darkToggle} onClick={() => setDark(!dark)}>
+        <span>{dark ? '☀️' : '🌙'}</span>
+        <span>{dark ? 'Light Mode' : 'Dark Mode'}</span>
+        <span className={`${s.toggleTrack} ${dark ? s.toggleOn : ''}`}>
+          <span className={s.toggleThumb} />
+        </span>
+      </button>
 
       <button className={s.signOutBtn} onClick={handleSignOut}>
         <span>🚪</span><span>Sign Out</span>

@@ -25,11 +25,17 @@ function ProtectedRoute({ user, children }: { user: User | null; children: JSX.E
 
 export default function App() {
   const [user, setUser] = useState<User | null | undefined>(undefined)
+  const [dark, setDark] = useState<boolean>(() => localStorage.getItem('theme') === 'dark')
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, u => setUser(u))
     return unsub
   }, [])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+  }, [dark])
 
   if (user === undefined) return null
 
@@ -42,7 +48,7 @@ export default function App() {
         <Route path="/login" element={user ? <Navigate to="/main" replace /> : <LoginPage />} />
 
         {/* Protected routes — all share the sidebar layout */}
-        <Route element={<ProtectedRoute user={user}><AppLayout /></ProtectedRoute>}>
+        <Route element={<ProtectedRoute user={user}><AppLayout dark={dark} setDark={setDark} /></ProtectedRoute>}>
           <Route path="/main" element={<MainPage />} />
           <Route path="/match" element={<MatchPage />} />
           <Route path="/events" element={<EventsPage />} />

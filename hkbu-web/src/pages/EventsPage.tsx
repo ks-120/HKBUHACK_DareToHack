@@ -284,8 +284,8 @@ export default function EventsPage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               {ev.detailUrl && (
                 <a href={ev.detailUrl} target="_blank" rel="noopener noreferrer"
-                  className={s.btnGhost}
-                  style={{ padding: '8px 14px', fontSize: 13, width: 'auto' }}>
+                  className={s.btnEdit}
+                  style={{ padding: '8px 14px', fontSize: 13, width: 'auto', textDecoration: 'none' }}>
                   Details ↗
                 </a>
               )}

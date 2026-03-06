@@ -6,7 +6,9 @@ import { UserProfile } from '../types'
 import Sidebar from './Sidebar'
 import s from './Sidebar.module.css'
 
-export default function AppLayout() {
+interface Props { dark: boolean; setDark: (v: boolean) => void }
+
+export default function AppLayout({ dark, setDark }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function AppLayout() {
 
   return (
     <div className={s.appShell}>
-      <Sidebar profile={profile} />
+      <Sidebar profile={profile} dark={dark} setDark={setDark} />
       <div className={s.mainContent}>
         <Outlet />
       </div>

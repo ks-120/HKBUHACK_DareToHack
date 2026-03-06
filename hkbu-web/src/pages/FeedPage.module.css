@@ -26,7 +26,7 @@
 
 /* ── Compose box ── */
 .composeBox {
-  background: #fff;
+  background: var(--bg2);
   border: 1.5px solid var(--border);
   border-radius: 18px;
   padding: 12px 16px;
@@ -72,7 +72,8 @@
   from { opacity: 0; } to { opacity: 1; }
 }
 .modal {
-  background: #fff; border-radius: 24px;
+  background: var(--bg2);
+  border-radius: 24px;
   width: 100%; max-width: 560px;
   padding: 28px; display: flex; flex-direction: column; gap: 14px;
   box-shadow: 0 24px 80px rgba(13,39,96,0.22);
@@ -92,7 +93,7 @@
   transition: border-color .15s, box-shadow .15s, background .15s;
 }
 .modalTextarea:focus {
-  border-color: var(--accent); outline: none; background: #fff;
+  border-color: var(--accent); outline: none; background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(13,39,96,0.07);
 }
 .modalTextarea::placeholder { color: #b0bcd4; }
@@ -104,7 +105,7 @@
   color: var(--text2); font-size: 12px; font-weight: 700;
   cursor: pointer; transition: all .15s; white-space: nowrap;
 }
-.tag:hover { border-color: var(--accent); color: var(--accent); background: #eef2ff; transform: translateY(-1px); }
+.tag:hover { border-color: var(--accent); color: var(--accent); background: var(--bg3); transform: translateY(-1px); }
 .tagActive {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 6px 14px; border-radius: 20px;
@@ -121,7 +122,7 @@
   color: var(--text2); font-size: 14px; font-weight: 700;
   cursor: pointer; transition: all .15s;
 }
-.btnCancel:hover { border-color: var(--accent); color: var(--accent); background: #f0f4ff; }
+.btnCancel:hover { border-color: var(--accent); color: var(--accent); background: var(--bg3); }
 .btnSubmit {
   padding: 10px 26px; border-radius: 12px;
   background: linear-gradient(135deg, var(--accent2), #e8620a);
@@ -138,7 +139,7 @@
 
 /* ── Sort + filter bar ── */
 .toolbar {
-  background: #fff; border: 1.5px solid var(--border);
+  background: var(--bg2); border: 1.5px solid var(--border);
   border-radius: 16px; padding: 10px 14px;
   display: flex; flex-direction: column; gap: 10px;
   margin-bottom: 16px;
@@ -170,7 +171,7 @@
   color: var(--text2); font-size: 12px; font-weight: 700;
   cursor: pointer; transition: all .15s; flex-shrink: 0;
 }
-.filterTag:hover { border-color: var(--accent); color: var(--accent); background: #eef2ff; transform: translateY(-1px); }
+.filterTag:hover { border-color: var(--accent); color: var(--accent); background: var(--bg3); transform: translateY(-1px); }
 .filterTagActive {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 7px 14px; border-radius: 20px; white-space: nowrap;
@@ -182,7 +183,7 @@
 
 /* ── Post card — Reddit + Instagram hybrid ── */
 .postCard {
-  background: #fff;
+  background: var(--bg2);
   border: 1.5px solid var(--border);
   border-radius: 18px;
   display: flex;
@@ -297,7 +298,7 @@
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
 }
 .pinnedCard {
-  background: #fff; border: 1.5px solid var(--border); border-radius: 16px;
+  background: var(--bg2); border: 1.5px solid var(--border); border-radius: 16px;
   padding: 14px 12px; display: flex; flex-direction: column; gap: 8px;
   box-shadow: 0 2px 10px rgba(13,39,96,0.06);
   transition: border-color .15s, transform .2s;
@@ -431,11 +432,11 @@
   cursor: pointer; border-radius: 12px;
   transition: background .15s, color .15s, transform .12s;
 }
-.mainTab:hover { background: rgba(255,255,255,0.6); color: var(--accent); }
+.mainTab:hover { background: var(--bg3); color: var(--accent); }
 .mainTabActive {
   flex: 1; padding: 11px 0;
   font-size: 13px; font-weight: 800;
-  color: var(--accent); background: #fff; border: none;
+  color: var(--accent); background: var(--bg2); border: none;
   cursor: pointer; border-radius: 12px;
   box-shadow: 0 2px 10px rgba(13,39,96,0.10);
   transition: box-shadow .15s;
@@ -456,7 +457,7 @@
 /* ── Community grid ── */
 .communityGrid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
 .communityCard {
-  background: #fff; border: 1.5px solid var(--border); border-radius: 18px;
+  background: var(--bg2); border: 1.5px solid var(--border); border-radius: 18px;
   padding: 14px 18px; display: flex; align-items: center; gap: 14px;
   box-shadow: 0 2px 10px rgba(13,39,96,0.06);
   transition: border-color .15s, transform .2s, box-shadow .2s;
@@ -517,7 +518,7 @@
   color: var(--text2); font-size: 12px; font-weight: 700;
   cursor: pointer; transition: all .15s; white-space: nowrap;
 }
-.leaveBtn:hover { border-color: #ef4444; color: #ef4444; background: #fff1f2; }
+.leaveBtn:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.08); }
 
 /* ── Create community button ── */
 .createCommunityBtn {
@@ -529,7 +530,7 @@
 }
 .createCommunityBtn:hover {
   border-color: var(--accent2); color: var(--accent2);
-  background: #fff8f0; transform: translateY(-1px);
+  background: var(--bg3); transform: translateY(-1px);
 }
 
 /* ── Category filter row ── */
@@ -581,7 +582,7 @@
   transition: border-color .15s, box-shadow .15s, background .15s;
 }
 .modalInput:focus {
-  border-color: var(--accent); outline: none; background: #fff;
+  border-color: var(--accent); outline: none; background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(13,39,96,0.07);
 }
 .modalInput::placeholder { color: #b0bcd4; }
@@ -615,7 +616,7 @@
   color: var(--text2); font-size: 13px; font-weight: 700;
   cursor: pointer; transition: all .15s;
 }
-.helpTypeBtn:hover { border-color: var(--accent); color: var(--accent); background: #f0f4ff; }
+.helpTypeBtn:hover { border-color: var(--accent); color: var (--accent); background: var(--bg3); }
 .helpTypeActive {
   flex: 1; padding: 10px 0; border-radius: 12px;
   border: 1.5px solid var(--accent);
@@ -624,7 +625,7 @@
   box-shadow: 0 2px 8px rgba(13,39,96,0.18);
 }
 .helpCard {
-  background: #fff; border-radius: 18px; padding: 16px 18px;
+  background: var(--bg2); border-radius: 18px; padding: 16px 18px;
   border: 1.5px solid var(--border); margin-bottom: 10px;
   box-shadow: 0 2px 10px rgba(13,39,96,0.06);
   display: flex; flex-direction: column; gap: 8px;

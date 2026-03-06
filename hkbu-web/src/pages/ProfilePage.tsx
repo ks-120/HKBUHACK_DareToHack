@@ -182,7 +182,7 @@ export default function ProfilePage() {
         <AvatarUpload uid={profile.uid} currentURL={photoURL}
           nickname={profile.nickname} onUploaded={handlePhotoChange} />
         <div style={{ overflow: 'hidden' }}>
-          <div style={{ color: '#fff', fontSize: 22, fontWeight: 800 }}>{profile.nickname}</div>
+          <div style={{ color: 'var(--accent)', fontSize: 22, fontWeight: 800 }}>{profile.nickname}</div>
           <div style={{ color: 'var(--text2)', fontSize: 14, marginTop: 4 }}>{profile.email}</div>
           {profile.major && (
             <div style={{ color: 'var(--text2)', fontSize: 13, marginTop: 2 }}>
@@ -204,7 +204,7 @@ export default function ProfilePage() {
           {profile.bio && (
             <Card>
               <p className={s.label}>Bio</p>
-              <p style={{ color: '#fff', fontSize: 14, lineHeight: 1.6, marginTop: 6 }}>{profile.bio}</p>
+              <p style={{ color: 'var(--text3)', fontSize: 14, lineHeight: 1.6, marginTop: 6 }}>{profile.bio}</p>
             </Card>
           )}
 
@@ -254,7 +254,7 @@ export default function ProfilePage() {
             </Card>
           )}
 
-          <button className={s.btnGhost} onClick={() => setEditing(true)} style={{ width: '100%', marginTop: 4 }}>
+          <button className={s.btnEdit} onClick={() => setEditing(true)} style={{ width: '100%', marginTop: 4 }}>
             ✏️ Edit Profile
           </button>
           {saved && <p style={{ color: 'var(--accent3)', fontSize: 14, marginTop: 8, textAlign: 'center' }}>✅ Profile updated!</p>}

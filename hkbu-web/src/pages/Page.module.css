@@ -80,7 +80,7 @@
   pointer-events: none;
 }
 .authCard {
-  background: #fff; border-radius: 24px; padding: 44px 40px;
+  background: var(--bg2); border-radius: 24px; padding: 44px 40px;
   width: 100%; max-width: 460px;
   box-shadow: 0 24px 80px rgba(13,39,96,0.28);
   position: relative; z-index: 1;
@@ -114,7 +114,7 @@
 }
 .greetingSub { color: var(--text2); font-size: 14px; margin-top: 4px; }
 .pointsBadge {
-  background: linear-gradient(135deg, #fff7ed, #fff3e0);
+  background: var(--bg2);
   border: 1.5px solid var(--gold); border-radius: 14px;
   padding: 8px 18px; color: var(--accent2); font-weight: 800; font-size: 15px;
   white-space: nowrap; box-shadow: 0 2px 8px rgba(245,166,35,0.15);
@@ -127,7 +127,7 @@
   gap: 14px;
 }
 .featureCard {
-  background: #fff; border-radius: 20px; padding: 26px 22px;
+  background: var(--bg2); border-radius: 20px; padding: 26px 22px;
   border: 1.5px solid var(--border); border-top-width: 4px;
   text-align: left;
   transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease, border-color 0.2s;
@@ -220,7 +220,7 @@
   transition: background 0.15s, border-color 0.15s, transform 0.15s;
 }
 .backBtn:hover {
-  background: #fff; border-color: var(--accent);
+  background: var(--bg2); border-color: var(--accent);
   transform: translateX(-2px);
 }
 .btnEdit {
@@ -246,7 +246,7 @@
 }
 .input:focus {
   border-color: var(--accent);
-  background: #fff;
+  background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(13,39,96,0.07);
 }
 .input::placeholder { color: #b0bcd4; }
@@ -270,7 +270,7 @@
 }
 .chip:hover {
   border-color: var(--accent); color: var(--accent);
-  background: #eef2ff; transform: translateY(-1px);
+  background: var(--bg3); transform: translateY(-1px);
 }
 .chipActive {
   padding: 7px 15px; border-radius: 20px;
@@ -310,7 +310,7 @@
   gap: 16px;
 }
 .matchCard {
-  background: #fff; border-radius: 20px; padding: 22px;
+  background: var(--bg2); border-radius: 20px; padding: 22px;
   border: 1.5px solid var(--border); box-shadow: var(--shadow);
   transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
   animation: fadeIn .3s ease both;
@@ -323,7 +323,7 @@
 /* ── Events ── */
 .eventList { display: flex; flex-direction: column; gap: 16px; }
 .eventCard {
-  background: #fff; border-radius: 20px;
+  background: var(--bg2); border-radius: 20px;
   border: 1.5px solid var(--border); box-shadow: var(--shadow);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -359,7 +359,7 @@
 .eventTab:hover { background: rgba(255,255,255,0.6); color: var(--accent); }
 .eventTabActive {
   flex: 1; padding: 10px 0; font-size: 13px; font-weight: 800;
-  color: var(--accent); background: #fff; border: none; cursor: pointer;
+  color: var(--accent); background: var(--bg2); border: none; cursor: pointer;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(13,39,96,0.10);
   transition: box-shadow 0.15s;
@@ -375,7 +375,7 @@
 }
 .createEventBtn:hover {
   border-color: var(--accent2); color: var(--accent2);
-  background: #fff8f0; transform: translateY(-1px);
+  background: var(--bg3); transform: translateY(-1px);
 }
 
 /* ── Event modal ── */
@@ -387,7 +387,7 @@
   animation: fadeIn .15s ease;
 }
 .eventModal {
-  background: #fff; border-radius: 24px;
+  background: var(--bg2); border-radius: 24px;
   width: 100%; max-width: 520px; padding: 32px;
   display: flex; flex-direction: column; gap: 14px;
   box-shadow: var(--shadow-xl);
@@ -411,7 +411,7 @@
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .eventModalInput:focus {
-  border-color: var(--accent); outline: none; background: #fff;
+  border-color: var(--accent); outline: none; background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(13,39,96,0.07);
 }
 .eventModalInput::placeholder { color: #b0bcd4; }
@@ -422,7 +422,7 @@
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .eventModalTextarea:focus {
-  border-color: var(--accent); outline: none; background: #fff;
+  border-color: var(--accent); outline: none; background: var(--bg2);
   box-shadow: 0 0 0 3px rgba(13,39,96,0.07);
 }
 .eventModalTextarea::placeholder { color: #b0bcd4; }
@@ -435,7 +435,7 @@
   color: var(--text2); font-size: 14px; font-weight: 700; cursor: pointer;
   transition: all 0.15s;
 }
-.eventModalCancel:hover { border-color: var(--accent); color: var(--accent); background: #f0f4ff; }
+.eventModalCancel:hover { border-color: var(--accent); color: var(--accent); background: var(--bg3); }
 .eventModalSubmit {
   padding: 10px 26px; border-radius: 12px;
   background: linear-gradient(135deg, var(--accent2), #e8620a);
@@ -461,7 +461,7 @@
 
 /* ── Feed compose ── */
 .composeBox {
-  background: #fff; border-radius: 18px; padding: 14px 18px;
+  background: var(--bg2); border-radius: 18px; padding: 14px 18px;
   border: 1.5px solid var(--border); margin-bottom: 18px;
   display: flex; align-items: center; gap: 12px;
   box-shadow: var(--shadow);
@@ -484,7 +484,7 @@
 .filterBar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .postList { display: flex; flex-direction: column; gap: 12px; }
 .postCard {
-  background: #fff; border-radius: 16px; padding: 18px 20px;
+  background: var(--bg2); border-radius: 16px; padding: 18px 20px;
   border: 1.5px solid var(--border); box-shadow: var(--shadow);
   transition: border-color 0.15s, transform 0.15s;
   animation: fadeIn .3s ease both;
@@ -506,7 +506,7 @@
   display: flex; align-items: center; gap: 12px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--border);
-  background: #fff;
+  background: var(--bg2);
   flex-shrink: 0;
   box-shadow: 0 2px 12px rgba(13,39,96,0.07);
 }
@@ -543,7 +543,7 @@
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
 .bubbleThem {
-  background: #fff; color: var(--text3);
+  background: var(--bg2); color: var(--text3);
   border-radius: 20px 20px 20px 4px;
   padding: 10px 16px; max-width: 72%;
   border: 1px solid var(--border);
@@ -562,7 +562,7 @@
 }
 .chatInputRow {
   display: flex; gap: 10px; padding: 12px 16px;
-  border-top: 1px solid var(--border); background: #fff;
+  border-top: 1px solid var(--border); background: var(--bg2);
   flex-shrink: 0; align-items: flex-end;
 }
 .chatInput {
@@ -611,7 +611,7 @@
 }
 .leaderList { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .leaderRow {
-  display: flex; align-items: center; gap: 12px; background: #fff;
+  display: flex; align-items: center; gap: 12px; background: var(--bg2);
   border-radius: 14px; padding: 14px 16px; border: 1.5px solid var(--border);
   box-shadow: var(--shadow);
   transition: transform 0.15s, border-color 0.15s;
@@ -631,7 +631,7 @@
   animation: fadeIn .15s ease;
 }
 .modalCard {
-  background: #fff; border-radius: 24px 24px 0 0; padding: 36px;
+  background: var(--bg2); border-radius: 24px 24px 0 0; padding: 36px;
   width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 16px;
   box-shadow: 0 -8px 40px rgba(13,39,96,0.18);
   animation: slideUp .25s cubic-bezier(0.34,1.56,0.64,1) both;
@@ -701,13 +701,13 @@
 .inboxRow {
   display: flex; align-items: center; gap: 14px;
   padding: 13px 16px; border-radius: 16px;
-  background: #fff; border: 1px solid transparent;
+  background: var(--bg2); border: 1px solid transparent;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.15s;
   text-align: left; width: 100%;
 }
 .inboxRow:hover {
-  background: #fff; border-color: var(--border);
+  background: var(--bg2); border-color: var(--border);
   transform: translateX(4px);
   box-shadow: var(--shadow);
 }
@@ -734,8 +734,7 @@
   background: linear-gradient(135deg, var(--accent2), #e8620a);
   color: #fff; font-size: 10px; font-weight: 800;
   min-width: 20px; height: 20px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  padding: 0 5px; border: 2.5px solid #fff;
+  display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2.5px solid #fff;
   animation: pulse 2s infinite;
 }
 @keyframes pulse {

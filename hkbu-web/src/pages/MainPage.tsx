@@ -152,7 +152,7 @@ export default function MainPage() {
           <span className={ms.sectionTitle}>Quick Access</span>
         </div>
       </div>
-      <div className={s.cardGrid}>
+      <div className={ms.quickGrid}>
         {CARDS.map(card => (
           <button key={card.path} className={s.featureCard}
             style={{ borderTopColor: card.color }} onClick={() => nav(card.path)}>

@@ -66,7 +66,9 @@ export default function SettingsPage() {
       {/* Account info */}
       <div style={{ background: 'var(--bg2)', borderRadius: 16, padding: 24,
         border: '1px solid var(--border)', marginBottom: 20 }}>
-        <p className={s.label}>Logged in as</p>
+        <p style={{ color: 'var(--text3)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.7px' }}>
+          Logged in as
+        </p>
         <p style={{ color: 'var(--accent)', fontSize: 15, marginTop: 6, fontWeight: 600 }}>
           {auth.currentUser?.email}
         </p>
@@ -106,7 +108,7 @@ export default function SettingsPage() {
         <p style={{ color: 'var(--accent)', fontSize: 17, fontWeight: 700, marginBottom: 12 }}>
           ℹ️ About
         </p>
-        <p style={{ color: 'var(--text2)', fontSize: 14, lineHeight: 1.8 }}>
+        <p style={{ color: 'var(--text3)', fontSize: 14, lineHeight: 1.8 }}>
           <strong style={{ color: 'var(--accent)' }}>HKBU Buddy</strong><br />
           Version 1.0.0<br />
           Built for BUHack 2026 🎓<br />
