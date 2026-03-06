@@ -229,3 +229,12 @@ Chung Ka Shing — HKBU
 ## 📄 License
 
 MIT
+
+## 🤖 AI Declaration
+
+This project was built primarily by the team, with minimal AI assistance. We declare the following:
+
+- **GitHub Copilot** was occasionally used for boilerplate code suggestions (e.g. repetitive CSS and TypeScript type definitions), all of which were manually reviewed and rewritten to fit our needs.
+- **HKBU GenAI Platform (GPT-4.1)** is integrated as a **product feature** (the HKBUChat assistant) — it was not used as a development tool for writing the application code. 
+
+No AI tool was used to generate the project idea.
