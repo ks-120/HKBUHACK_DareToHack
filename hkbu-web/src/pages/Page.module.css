@@ -182,10 +182,10 @@
 .btnPrimary:disabled { opacity: .45; cursor: not-allowed; }
 
 .btnGhost {
-  background: rgba(255,255,255,0.9); border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.75);
   color: #fff; border-radius: 14px; padding: 14px 20px; font-size: 15px; font-weight: 700;
   width: 100%;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, color 0.15s;
   backdrop-filter: blur(4px);
 }
 .btnGhost:hover {
