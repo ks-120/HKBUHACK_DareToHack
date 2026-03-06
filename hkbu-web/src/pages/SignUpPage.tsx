@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../config/firebaseConfig'
@@ -68,32 +68,47 @@ const MUST_HAVES: MustHave[] = [
 ]
 
 const PERSONALITY_SCALES: { key: keyof PersonalityState; lo: string; hi: string; emoLo: string; emoHi: string }[] = [
-  { key: 'introvert',   lo: 'Very Extroverted',    hi: 'Very Introverted',  emoLo: '🎉', emoHi: '📚' },
-  { key: 'planned',     lo: 'Spontaneous',          hi: 'Super Planned',     emoLo: '🎲', emoHi: '📅' },
-  { key: 'deepTalks',   lo: 'Casual Chit-chat',     hi: 'Deep Talks',        emoLo: '💬', emoHi: '🧠' },
-  { key: 'optimistic',  lo: 'Calm / Reserved',      hi: 'Energetic / Upbeat',emoLo: '😌', emoHi: '⚡' },
+  { key: 'introvert',   lo: 'Very Extroverted',     hi: 'Very Introverted',   emoLo: '🎉', emoHi: '📚' },
+  { key: 'planned',     lo: 'Spontaneous',           hi: 'Super Planned',      emoLo: '🎲', emoHi: '📅' },
+  { key: 'deepTalks',   lo: 'Casual Chit-chat',      hi: 'Deep Talks',         emoLo: '💬', emoHi: '🧠' },
+  { key: 'optimistic',  lo: 'Calm / Reserved',       hi: 'Energetic / Upbeat', emoLo: '😌', emoHi: '⚡' },
 ]
 
-// ── Step metadata ──────────────────────────────────────────────────────────
 const STEPS = [
-  { id: 0, label: 'Welcome',      emoji: '👋' },
-  { id: 1, label: 'Account',      emoji: '🔑' },
-  { id: 2, label: 'Profile',      emoji: '🎓' },
-  { id: 3, label: 'Personality',  emoji: '🧬' },
-  { id: 4, label: 'Academic',     emoji: '📖' },
-  { id: 5, label: 'Interests',    emoji: '🎯' },
-  { id: 6, label: 'Matching',     emoji: '🤝' },
-  { id: 7, label: 'Extra',        emoji: '✨' },
-  { id: 8, label: 'Review',       emoji: '✅' },
+  { id: 0, label: 'Welcome',     emoji: '👋' },
+  { id: 1, label: 'Account',     emoji: '🔑' },
+  { id: 2, label: 'Profile',     emoji: '🎓' },
+  { id: 3, label: 'Personality', emoji: '🧬' },
+  { id: 4, label: 'Academic',    emoji: '📖' },
+  { id: 5, label: 'Interests',   emoji: '🎯' },
+  { id: 6, label: 'Matching',    emoji: '🤝' },
+  { id: 7, label: 'Extra',       emoji: '✨' },
+  { id: 8, label: 'Review',      emoji: '✅' },
 ]
 
 // ── Local types ────────────────────────────────────────────────────────────
 interface PersonalityState { introvert: number; planned: number; deepTalks: number; optimistic: number }
 
+// ── Password strength ──────────────────────────────────────────────────────
+function pwStrength(pw: string): { score: number; label: string; color: string } {
+  if (!pw) return { score: 0, label: '', color: '#eef0f8' }
+  let score = 0
+  if (pw.length >= 6)  score++
+  if (pw.length >= 10) score++
+  if (/[A-Z]/.test(pw)) score++
+  if (/[0-9]/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+  if (score <= 1) return { score: 20,  label: 'Weak',   color: '#e53935' }
+  if (score === 2) return { score: 40,  label: 'Fair',   color: '#fb8c00' }
+  if (score === 3) return { score: 60,  label: 'Good',   color: '#fdd835' }
+  if (score === 4) return { score: 80,  label: 'Strong', color: '#43a047' }
+  return               { score: 100, label: 'Great 🎉', color: '#00897b' }
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 function VisToggle({ label, on, onToggle }: { label: string; on: boolean; onToggle(): void }) {
   return (
-    <div className={s.visRow} onClick={onToggle}>
+    <div className={s.visRow} onClick={onToggle} role="switch" aria-checked={on}>
       <div className={`${s.visToggle} ${on ? s.visToggleOn : ''}`}>
         <div className={`${s.visToggleKnob} ${on ? s.visToggleKnobOn : ''}`} />
       </div>
@@ -108,12 +123,11 @@ function ChipGrid<T extends string>({
   return (
     <div className={s.chipGrid}>
       {options.map(o => {
-        const active = selected.includes(o)
+        const active  = selected.includes(o)
         const atLimit = !active && limit !== undefined && selected.length >= limit
         return (
           <button
-            type="button"
-            key={o}
+            type="button" key={o}
             className={`${active ? s.chipActive : s.chip} ${atLimit ? s.chipLimit : ''}`}
             onClick={() => !atLimit && onToggle(o)}
           >{o}</button>
@@ -123,28 +137,44 @@ function ChipGrid<T extends string>({
   )
 }
 
+// ── Section header helper ──────────────────────────────────────────────────
+function SectionHeader({ emoji, title, sub }: { emoji: string; title: string; sub: string }) {
+  return (
+    <div className={s.sectionHeader}>
+      <div className={s.sectionEmojiBadge}>{emoji}</div>
+      <div className={s.sectionTitleGroup}>
+        <div className={s.sectionTitle}>{title}</div>
+        <div className={s.sectionSub}>{sub}</div>
+      </div>
+    </div>
+  )
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 export default function SignUpPage() {
   const nav = useNavigate()
-  const [step, setStep] = useState(0)
+  const [step, setStep]       = useState(0)
   const [animKey, setAnimKey] = useState(0)
+  const [goingBack, setGoingBack] = useState(false)
 
   // Step 1 – account
-  const [email, setEmail] = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [showPw, setShowPw]     = useState(false)
+  const [showCf, setShowCf]     = useState(false)
 
   // Step 2 – basic profile
-  const [nickname, setNickname] = useState('')
-  const [photoURL, setPhotoURL] = useState('')
-  const [tempUid] = useState(() => crypto.randomUUID())
+  const [nickname, setNickname]       = useState('')
+  const [photoURL, setPhotoURL]       = useState('')
+  const [tempUid]                     = useState(() => crypto.randomUUID())
   const [yearOfStudy, setYearOfStudy] = useState<YearOfStudy | ''>('')
-  const [showYear, setShowYear] = useState(true)
-  const [faculty, setFaculty] = useState<Faculty | ''>('')
+  const [showYear, setShowYear]       = useState(true)
+  const [faculty, setFaculty]         = useState<Faculty | ''>('')
   const [showFaculty, setShowFaculty] = useState(true)
-  const [major, setMajor] = useState('')
-  const [gender, setGender] = useState<Gender | ''>('')
-  const [showGender, setShowGender] = useState(true)
+  const [major, setMajor]             = useState('')
+  const [gender, setGender]           = useState<Gender | ''>('')
+  const [showGender, setShowGender]   = useState(true)
 
   // Step 3 – personality
   const [personality, setPersonality] = useState<PersonalityState>({
@@ -152,39 +182,39 @@ export default function SignUpPage() {
   })
 
   // Step 4 – academic
-  const [studyStyles, setStudyStyles] = useState<StudyStyle[]>([])
+  const [studyStyles, setStudyStyles]           = useState<StudyStyle[]>([])
   const [subjectStrengths, setSubjectStrengths] = useState<SubjectStrength[]>([])
-  const [helpNeeded, setHelpNeeded] = useState<HelpNeeded[]>([])
+  const [helpNeeded, setHelpNeeded]             = useState<HelpNeeded[]>([])
 
   // Step 5 – interests
   const [interests, setInterests] = useState<Interest[]>([])
-  const [clubs, setClubs] = useState<Club[]>([])
+  const [clubs, setClubs]         = useState<Club[]>([])
 
   // Step 6 – matching
   const [buddyTypes, setBuddyTypes] = useState<BuddyType[]>([])
-  const [mustHaves, setMustHaves] = useState<MustHave[]>([])
+  const [mustHaves, setMustHaves]   = useState<MustHave[]>([])
 
   // Step 7 – fun extras
-  const [bio, setBio] = useState('')
+  const [bio, setBio]             = useState('')
   const [icebreaker, setIcebreaker] = useState('')
 
   // Step 8 – consent
   const [consent, setConsent] = useState(false)
 
-  const [error, setError] = useState('')
+  const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
 
   // ── Navigation ───────────────────────────────────────────────────────────
-  const goTo = useCallback((next: number) => {
+  const goTo = useCallback((next: number, backward = false) => {
     setError('')
+    setGoingBack(backward)
     setStep(next)
     setAnimKey(k => k + 1)
-    // Scroll card top
-    document.querySelector('[data-card]')?.scrollTo({ top: 0 })
+    document.querySelector('[data-card]')?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  const next = () => goTo(step + 1)
-  const back = () => goTo(step - 1)
+  const next = () => goTo(step + 1, false)
+  const back = () => goTo(step - 1, true)
 
   // ── Toggle helpers ───────────────────────────────────────────────────────
   const toggleArr = <T,>(arr: T[], val: T) =>
@@ -195,10 +225,7 @@ export default function SignUpPage() {
     switch (step) {
       case 0: return true
       case 1:
-        if (!HKBU_REGEX.test(email)) return false
-        if (password.length < 6) return false
-        if (password !== confirm) return false
-        return true
+        return HKBU_REGEX.test(email) && password.length >= 6 && password === confirm
       case 2:
         return nickname.trim().length > 0 && !!yearOfStudy && !!faculty && major.trim().length > 0
       case 3: return true
@@ -214,13 +241,13 @@ export default function SignUpPage() {
   const validateAndNext = () => {
     setError('')
     if (step === 1) {
-      if (!HKBU_REGEX.test(email))   { setError('Use your HKBU email (@life.hkbu.edu.hk)'); return }
-      if (password.length < 6)        { setError('Password must be at least 6 characters'); return }
-      if (password !== confirm)        { setError('Passwords do not match'); return }
+      if (!HKBU_REGEX.test(email))  { setError('Use your HKBU email (@life.hkbu.edu.hk)'); return }
+      if (password.length < 6)       { setError('Password must be at least 6 characters'); return }
+      if (password !== confirm)       { setError('Passwords do not match'); return }
     }
-    if (step === 2 && !yearOfStudy)   { setError('Please select your year of study'); return }
-    if (step === 2 && !faculty)       { setError('Please select your faculty'); return }
-    if (step === 2 && !major.trim())  { setError('Please enter your major / programme'); return }
+    if (step === 2 && !yearOfStudy)  { setError('Please select your year of study'); return }
+    if (step === 2 && !faculty)      { setError('Please select your faculty'); return }
+    if (step === 2 && !major.trim()) { setError('Please enter your major / programme'); return }
     if (step === 4 && studyStyles.length === 0) { setError('Select at least one study style'); return }
     if (step === 5 && interests.length === 0)   { setError('Select at least one interest'); return }
     if (step === 6 && buddyTypes.length === 0)  { setError('Select at least one buddy type'); return }
@@ -231,8 +258,7 @@ export default function SignUpPage() {
   // ── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!consent) { setError('Please accept the privacy policy to continue'); return }
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password)
       await setDoc(doc(db, 'users', cred.user.uid), {
@@ -243,46 +269,43 @@ export default function SignUpPage() {
         privacyConsent: true,
         createdAt: Date.now(),
         yearOfStudy: yearOfStudy || null,
-        showYear,
-        faculty: faculty || null,
-        showFaculty,
-        major: major.trim(),
-        gender: gender || null,
-        showGender,
+        showYear, faculty: faculty || null, showFaculty,
+        major: major.trim(), gender: gender || null, showGender,
         personalityIntrovert:  personality.introvert,
         personalityPlanned:    personality.planned,
         personalityDeepTalks:  personality.deepTalks,
         personalityOptimistic: personality.optimistic,
-        studyStyles,
-        subjectStrengths,
-        helpNeeded,
-        interests,
-        clubs,
-        buddyTypes,
-        mustHaves,
-        bio: bio.trim(),
-        icebreaker: icebreaker.trim(),
+        studyStyles, subjectStrengths, helpNeeded,
+        interests, clubs, buddyTypes, mustHaves,
+        bio: bio.trim(), icebreaker: icebreaker.trim(),
       })
       nav('/main')
-    } catch (err: any) {
-      setError(err.message ?? 'Something went wrong. Please try again.')
+    } catch (err: unknown) {
+      setError((err as Error).message ?? 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  // ── Sections ─────────────────────────────────────────────────────────────
+  // ── Derived ──────────────────────────────────────────────────────────────
   const progressPct = (step / (STEPS.length - 1)) * 100
+  const pw          = pwStrength(password)
+  const emailValid  = HKBU_REGEX.test(email)
+  const charLeft    = 150 - bio.length
+  const animClass   = goingBack ? s.slideBack : s.slideIn
 
+  // ── Sections ─────────────────────────────────────────────────────────────
   const renderStep = () => {
     switch (step) {
 
-      // ── 0: Welcome ────────────────────────────────────────────────────
+      // ── 0: Welcome ──────────────────────────────────────────────────────
       case 0:
         return (
           <div className={s.welcomeBody}>
-            <div className={s.welcomeEmoji}>🎓</div>
-            <div className={s.welcomeTitle}>Find Your<br/>HKBU Buddy</div>
+            <div className={s.welcomeHero}>🎓</div>
+            <div className={s.welcomeTitle}>
+              Find Your<br/><span>HKBU Buddy</span>
+            </div>
             <div className={s.welcomeSub}>
               Connect with study partners, hangout friends, and activity
               buddies right here on campus. Answer a few quick questions and
@@ -302,64 +325,109 @@ export default function SignUpPage() {
                 </div>
               ))}
             </div>
+            <div className={s.welcomeLoginLink}>
+              Already have an account? <Link to="/login">Log in →</Link>
+            </div>
           </div>
         )
 
-      // ── 1: Account ────────────────────────────────────────────────────
+      // ── 1: Account ──────────────────────────────────────────────────────
       case 1:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>🔑</div>
-            <div className={s.sectionTitle}>Create Your Account</div>
-            <div className={s.sectionSub}>Only @life.hkbu.edu.hk emails are accepted — keeping HKBU Buddy students-only!</div>
+            <SectionHeader emoji="🔑" title="Create Your Account"
+              sub="Only @life.hkbu.edu.hk emails are accepted — keeping BuddyUp students-only!" />
 
+            {/* Email */}
             <div className={s.qBlock}>
-              <label className={s.qLabel}>HKBU Email <span>required</span></label>
-              <input className={s.qInput} type="email"
-                placeholder="yourname@life.hkbu.edu.hk"
-                value={email} onChange={e => setEmail(e.target.value)} />
+              <div className={s.pwWrap}>
+                <input
+                  className={`${s.floatInput} ${email ? (emailValid ? s.valid : s.invalid) : ''}`}
+                  type="email" placeholder="HKBU Email"
+                  value={email} onChange={e => setEmail(e.target.value)}
+                />
+                <label className={s.floatLabel}>HKBU Email</label>
+                {email && (
+                  <span className={s.emailCheck}>{emailValid ? '✅' : '❌'}</span>
+                )}
+              </div>
+              {email && !emailValid && (
+                <div style={{ fontSize: 11, color: '#e53935', fontWeight: 600 }}>
+                  Must end in @life.hkbu.edu.hk
+                </div>
+              )}
             </div>
 
+            {/* Password */}
             <div className={s.qBlock}>
-              <label className={s.qLabel}>Password <span>min. 6 characters</span></label>
-              <input className={s.qInput} type="password"
-                placeholder="Choose a strong password"
-                value={password} onChange={e => setPassword(e.target.value)} />
+              <div className={s.pwWrap}>
+                <input
+                  className={s.floatInput}
+                  type={showPw ? 'text' : 'password'}
+                  placeholder="Password"
+                  value={password} onChange={e => setPassword(e.target.value)}
+                  style={{ paddingRight: 44 }}
+                />
+                <label className={s.floatLabel}>Password</label>
+                <button type="button" className={s.pwToggle}
+                  onClick={() => setShowPw(v => !v)}>{showPw ? '🙈' : '👁️'}</button>
+              </div>
+              {password && (
+                <div className={s.pwStrength}>
+                  <div className={s.pwStrengthTrack}>
+                    <div className={s.pwStrengthFill}
+                      style={{ width: `${pw.score}%`, background: pw.color }} />
+                  </div>
+                  <div className={s.pwStrengthLabel} style={{ color: pw.color }}>
+                    {pw.label}
+                  </div>
+                </div>
+              )}
             </div>
 
+            {/* Confirm */}
             <div className={s.qBlock}>
-              <label className={s.qLabel}>Confirm Password</label>
-              <input className={s.qInput} type="password"
-                placeholder="Repeat your password"
-                value={confirm} onChange={e => setConfirm(e.target.value)} />
+              <div className={s.pwWrap}>
+                <input
+                  className={`${s.floatInput} ${confirm && password ? (confirm === password ? s.valid : s.invalid) : ''}`}
+                  type={showCf ? 'text' : 'password'}
+                  placeholder="Confirm Password"
+                  value={confirm} onChange={e => setConfirm(e.target.value)}
+                  style={{ paddingRight: 44 }}
+                />
+                <label className={s.floatLabel}>Confirm Password</label>
+                <button type="button" className={s.pwToggle}
+                  onClick={() => setShowCf(v => !v)}>{showCf ? '🙈' : '👁️'}</button>
+              </div>
+              {confirm && password !== confirm && (
+                <div style={{ fontSize: 11, color: '#e53935', fontWeight: 600 }}>
+                  Passwords don't match
+                </div>
+              )}
             </div>
 
             {error && <div className={s.errMsg}>⚠️ {error}</div>}
           </div>
         )
 
-      // ── 2: Basic Profile ──────────────────────────────────────────────
+      // ── 2: Basic Profile ────────────────────────────────────────────────
       case 2:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>🎓</div>
-            <div className={s.sectionTitle}>Basic Profile</div>
-            <div className={s.sectionSub}>Help others recognise you. Toggle the 👁️ icon to hide any field from your public profile.</div>
+            <SectionHeader emoji="🎓" title="Basic Profile"
+              sub="Help others recognise you. Toggle the switch to hide any field from your public profile." />
 
-            {/* Avatar */}
             <div className={s.avatarCenter}>
               <AvatarUpload uid={tempUid} currentURL={photoURL}
                 nickname={nickname || '?'} onUploaded={url => setPhotoURL(url)} />
             </div>
 
-            {/* Nickname */}
             <div className={s.qBlock}>
               <label className={s.qLabel}>Display Name <span>required</span></label>
               <input className={s.qInput} placeholder="e.g. Alex or HKBU_King"
                 value={nickname} onChange={e => setNickname(e.target.value)} />
             </div>
 
-            {/* Year */}
             <div className={s.qBlock}>
               <label className={s.qLabel}>Year of Study <span>required</span></label>
               <select className={s.qSelect} value={yearOfStudy}
@@ -371,7 +439,6 @@ export default function SignUpPage() {
                 on={showYear} onToggle={() => setShowYear(v => !v)} />
             </div>
 
-            {/* Faculty */}
             <div className={s.qBlock}>
               <label className={s.qLabel}>Faculty / School <span>required</span></label>
               <select className={s.qSelect} value={faculty}
@@ -383,7 +450,6 @@ export default function SignUpPage() {
                 on={showFaculty} onToggle={() => setShowFaculty(v => !v)} />
             </div>
 
-            {/* Major */}
             <div className={s.qBlock}>
               <label className={s.qLabel}>Major / Programme <span>required</span></label>
               <input className={s.qInput}
@@ -391,7 +457,6 @@ export default function SignUpPage() {
                 value={major} onChange={e => setMajor(e.target.value)} />
             </div>
 
-            {/* Gender */}
             <div className={s.qBlock}>
               <label className={s.qLabel}>Gender <span>optional</span></label>
               <select className={s.qSelect} value={gender}
@@ -407,19 +472,18 @@ export default function SignUpPage() {
           </div>
         )
 
-      // ── 3: Personality ────────────────────────────────────────────────
+      // ── 3: Personality ──────────────────────────────────────────────────
       case 3:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>🧬</div>
-            <div className={s.sectionTitle}>Personality & Lifestyle</div>
-            <div className={s.sectionSub}>Drag each slider to describe yourself.</div>
+            <SectionHeader emoji="🧬" title="Personality & Lifestyle"
+              sub="Drag each slider to describe yourself. There are no wrong answers!" />
 
             <div className={s.sliderBlock}>
               {PERSONALITY_SCALES.map(({ key, lo, hi, emoLo, emoHi }) => (
                 <div className={s.sliderRow} key={key}>
-                  <div className={s.sliderLabels}><span>{lo}</span><span>{hi}</span></div>
                   <div className={s.sliderEmojis}><span>{emoLo}</span><span>{emoHi}</span></div>
+                  <div className={s.sliderLabels}><span>{lo}</span><span>{hi}</span></div>
                   <input type="range" min={1} max={5} step={1}
                     className={s.slider}
                     value={personality[key]}
@@ -433,19 +497,23 @@ export default function SignUpPage() {
           </div>
         )
 
-      // ── 4: Academic ───────────────────────────────────────────────────
+      // ── 4: Academic ─────────────────────────────────────────────────────
       case 4:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>📖</div>
-            <div className={s.sectionTitle}>Academic & Study Vibes</div>
-            <div className={s.sectionSub}>Tell us how you study — this is the core of our study-buddy matching!</div>
+            <SectionHeader emoji="📖" title="Academic & Study Vibes"
+              sub="This powers our study-buddy matching — be honest!" />
 
             <div className={s.qBlock}>
-              <label className={s.qLabel}>Preferred Study Style <span>pick up to 3 · required</span></label>
+              <label className={s.qLabel}>
+                Preferred Study Style <span>pick up to 3 · required</span>
+              </label>
               <div className={s.qHint}>How do you work best?</div>
               <ChipGrid options={STUDY_STYLES} selected={studyStyles} limit={3}
                 onToggle={v => setStudyStyles(a => toggleArr(a, v))} />
+              {studyStyles.length > 0 && (
+                <span className={s.chipCounter}>{studyStyles.length} / 3 selected</span>
+              )}
             </div>
 
             <div className={s.qBlock}>
@@ -466,22 +534,25 @@ export default function SignUpPage() {
           </div>
         )
 
-      // ── 5: Interests ──────────────────────────────────────────────────
+      // ── 5: Interests ────────────────────────────────────────────────────
       case 5:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>🎯</div>
-            <div className={s.sectionTitle}>Interests & Hobbies</div>
-            <div className={s.sectionSub}>Pick up to 10 interests.</div>
+            <SectionHeader emoji="🎯" title="Interests & Hobbies"
+              sub="Pick up to 10 things you love — the more honest, the better your matches." />
 
             <div className={s.qBlock}>
               <label className={s.qLabel}>Top Interests <span>1–10 · required</span></label>
               <ChipGrid options={INTERESTS} selected={interests} limit={10}
                 onToggle={v => setInterests(a => toggleArr(a, v))} />
+              {interests.length > 0 && (
+                <span className={s.chipCounter}>{interests.length} / 10 selected</span>
+              )}
             </div>
 
             <div className={s.qBlock}>
-              <label className={s.qLabel}>Clubs / Societies <span>optional · already in or interested in joining</span></label>
+              <label className={s.qLabel}>Clubs / Societies <span>optional</span></label>
+              <div className={s.qHint}>Already in, or interested in joining?</div>
               <ChipGrid options={CLUBS} selected={clubs}
                 onToggle={v => setClubs(a => toggleArr(a, v))} />
             </div>
@@ -490,13 +561,12 @@ export default function SignUpPage() {
           </div>
         )
 
-      // ── 6: Matching Goals ─────────────────────────────────────────────
+      // ── 6: Matching Goals ───────────────────────────────────────────────
       case 6:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>🤝</div>
-            <div className={s.sectionTitle}>Matching Goals</div>
-            <div className={s.sectionSub}>Tell us what kind of buddy you're looking for so we can prioritise your matches.</div>
+            <SectionHeader emoji="🤝" title="Matching Goals"
+              sub="Tell us what kind of buddy you're looking for so we can prioritise your matches." />
 
             <div className={s.qBlock}>
               <label className={s.qLabel}>What Kind of Buddy? <span>multi-select · required</span></label>
@@ -508,12 +578,11 @@ export default function SignUpPage() {
               <label className={s.qLabel}>Top 3 Must-Haves in a Buddy <span>pick up to 3 · required</span></label>
               <div className={s.rankGrid}>
                 {MUST_HAVES.map(m => {
-                  const idx = mustHaves.indexOf(m)
-                  const active = idx !== -1
+                  const idx     = mustHaves.indexOf(m)
+                  const active  = idx !== -1
                   const atLimit = !active && mustHaves.length >= 3
                   return (
-                    <div
-                      key={m}
+                    <div key={m}
                       className={`${s.rankItem} ${active ? s.rankItemActive : ''} ${atLimit ? s.chipLimit : ''}`}
                       onClick={() => !atLimit && setMustHaves(a => toggleArr(a, m))}
                     >
@@ -525,19 +594,21 @@ export default function SignUpPage() {
                   )
                 })}
               </div>
+              {mustHaves.length > 0 && (
+                <span className={s.chipCounter}>{mustHaves.length} / 3 selected</span>
+              )}
             </div>
 
             {error && <div className={s.errMsg}>⚠️ {error}</div>}
           </div>
         )
 
-      // ── 7: Fun Extras ─────────────────────────────────────────────────
+      // ── 7: Fun Extras ───────────────────────────────────────────────────
       case 7:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>✨</div>
-            <div className={s.sectionTitle}>Personal Touch</div>
-            <div className={s.sectionSub}>Optional — but these details make your profile stand out and spark great first conversations!</div>
+            <SectionHeader emoji="✨" title="Personal Touch"
+              sub="Optional — but a great bio sparks conversations and makes your profile stand out!" />
 
             <div className={s.qBlock}>
               <label className={s.qLabel}>Short Bio <span>optional · max 150 chars</span></label>
@@ -546,7 +617,10 @@ export default function SignUpPage() {
                 placeholder="Tell potential buddies a little about you…"
                 maxLength={150}
                 value={bio} onChange={e => setBio(e.target.value)} />
-              <div className={s.charCount}>{bio.length} / 150</div>
+              <div className={s.charCount}
+                style={{ color: charLeft <= 20 ? '#fb8c00' : charLeft <= 5 ? '#e53935' : '#9ea8c4' }}>
+                {charLeft} characters left
+              </div>
             </div>
 
             <div className={s.qBlock}>
@@ -559,16 +633,14 @@ export default function SignUpPage() {
           </div>
         )
 
-      // ── 8: Review & Consent ───────────────────────────────────────────
+      // ── 8: Review & Consent ─────────────────────────────────────────────
       case 8:
         return (
           <div className={s.sectionBody} key={animKey} data-card>
-            <div className={s.sectionEmoji}>✅</div>
-            <div className={s.sectionTitle}>Review & Complete</div>
-            <div className={s.sectionSub}>Double-check your profile before we find your matches!</div>
+            <SectionHeader emoji="✅" title="Review & Complete"
+              sub="Double-check your profile — you can always edit it later!" />
 
             <div className={s.reviewGrid}>
-              {/* Account */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>🔑 Account</div>
                 <div className={s.reviewRow}>
@@ -577,15 +649,14 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Profile */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>🎓 Profile</div>
                 {[
                   { k: 'Display Name', v: nickname },
-                  { k: 'Year', v: yearOfStudy || '—' },
-                  { k: 'Faculty', v: faculty || '—' },
-                  { k: 'Major', v: major || '—' },
-                  { k: 'Gender', v: gender || '—' },
+                  { k: 'Year',         v: yearOfStudy || '—' },
+                  { k: 'Faculty',      v: faculty || '—' },
+                  { k: 'Major',        v: major || '—' },
+                  { k: 'Gender',       v: gender || '—' },
                 ].map(r => (
                   <div className={s.reviewRow} key={r.k}>
                     <div className={s.reviewKey}>{r.k}</div>
@@ -594,7 +665,6 @@ export default function SignUpPage() {
                 ))}
               </div>
 
-              {/* Personality */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>🧬 Personality</div>
                 {PERSONALITY_SCALES.map(({ key, lo, hi }) => (
@@ -605,7 +675,6 @@ export default function SignUpPage() {
                 ))}
               </div>
 
-              {/* Academic */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>📖 Academic</div>
                 <div className={s.reviewRow}>
@@ -620,13 +689,12 @@ export default function SignUpPage() {
                 )}
                 {helpNeeded.length > 0 && (
                   <div className={s.reviewRow}>
-                    <div className={s.reviewKey}>Need Help With</div>
+                    <div className={s.reviewKey}>Need Help</div>
                     <div className={s.reviewChips}>{helpNeeded.map(x => <span className={s.reviewChip} key={x}>{x}</span>)}</div>
                   </div>
                 )}
               </div>
 
-              {/* Interests */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>🎯 Interests & Clubs</div>
                 <div className={s.reviewRow}>
@@ -641,7 +709,6 @@ export default function SignUpPage() {
                 )}
               </div>
 
-              {/* Matching */}
               <div className={s.reviewCard}>
                 <div className={s.reviewCardTitle}>🤝 Matching Goals</div>
                 <div className={s.reviewRow}>
@@ -654,7 +721,6 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              {/* Bio */}
               {(bio || icebreaker) && (
                 <div className={s.reviewCard}>
                   <div className={s.reviewCardTitle}>✨ Personal Touch</div>
@@ -664,7 +730,6 @@ export default function SignUpPage() {
               )}
             </div>
 
-            {/* Privacy consent */}
             <div className={s.consentBox}>
               <ul className={s.consentList}>
                 <li>Your real name is never shown — only your display name.</li>
@@ -675,7 +740,7 @@ export default function SignUpPage() {
               </ul>
               <label className={s.consentRow}>
                 <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} />
-                I agree to the Privacy Policy & Terms of Use
+                I agree to the Privacy Policy &amp; Terms of Use
               </label>
             </div>
 
@@ -687,35 +752,31 @@ export default function SignUpPage() {
     }
   }
 
-  // ── Footer buttons per step ───────────────────────────────────────────────
+  // ── Footer buttons ────────────────────────────────────────────────────────
   const renderFooter = () => {
     if (step === 0) return (
       <div className={s.wizardFooter}>
         <button className={s.btnBack} onClick={() => nav('/')}>← Back</button>
-        <button className={s.btnNext} onClick={next}>
-          Get Started 🚀
-        </button>
+        <button className={s.btnNext} onClick={next}>Get Started 🚀</button>
       </div>
     )
 
     if (step === 8) return (
       <div className={s.wizardFooter}>
         <button className={s.btnBack} onClick={back}>← Back</button>
-        <button className={s.btnNext} onClick={handleSubmit}
-          disabled={!consent || loading}>
-          {loading ? 'Creating account…' : 'Complete & Start Matching! 🎉'}
+        <button className={s.btnNext} onClick={handleSubmit} disabled={!consent || loading}>
+          {loading
+            ? <><span className={s.spinner} />Creating account…</>
+            : 'Complete & Start Matching! 🎉'}
         </button>
       </div>
     )
 
-    // Optional steps (7 = fun extras) can be skipped
     const isOptional = step === 7
     return (
       <div className={s.wizardFooter}>
         <button className={s.btnBack} onClick={back}>← Back</button>
-        {isOptional && (
-          <button className={s.btnSkip} onClick={next}>Skip</button>
-        )}
+        {isOptional && <button className={s.btnSkip} onClick={next}>Skip</button>}
         <button className={s.btnNext} onClick={validateAndNext} disabled={!canProceed()}>
           Continue →
         </button>
@@ -723,11 +784,12 @@ export default function SignUpPage() {
     )
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={s.wizardWrap}>
       <div className={s.wizardCard}>
-        {/* Progress bar */}
+
+        {/* Animated progress bar */}
         <div className={s.progressBar}>
           <div className={s.progressFill} style={{ width: `${progressPct}%` }} />
         </div>
@@ -737,13 +799,12 @@ export default function SignUpPage() {
           <div className={s.stepRow}>
             {STEPS.slice(1).map((st, i) => {
               const realIdx = i + 1
-              const isDone = step > realIdx
+              const isDone   = step > realIdx
               const isActive = step === realIdx
               return (
                 <>
                   {i > 0 && <div key={`div-${st.id}`} className={s.stepDivider} />}
-                  <div
-                    key={st.id}
+                  <div key={st.id}
                     className={`${s.stepPill} ${isActive ? s.stepPillActive : ''} ${isDone ? s.stepPillDone : ''}`}
                   >
                     {isDone ? '✓' : st.emoji} {st.label}
@@ -754,12 +815,12 @@ export default function SignUpPage() {
           </div>
         )}
 
-        {/* Section content */}
-        <div className={s.slideIn} key={`slide-${step}`}>
+        {/* Section content — direction-aware slide */}
+        <div className={animClass} key={`slide-${step}`}>
           {renderStep()}
         </div>
 
-        {/* Footer nav */}
+        {/* Footer */}
         {renderFooter()}
       </div>
     </div>
