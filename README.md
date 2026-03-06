@@ -3,7 +3,7 @@
 > **Connect. Study. Belong.**  
 > A smart campus social platform built for HKBU students — find compatible study partners, discover events, chat in real time, and get instant answers about campus life from an AI assistant.
 
-Built at **Dare to Hack 2026** by a team of HKBU students.
+Built at **BUHack 2026** by team **DareToHack**.
 
 🌐 **Live app:** [https://daretohack.web.app](https://daretohack.web.app)
 
@@ -221,8 +221,8 @@ The score breakdown is shown on every match card so it never feels like a black 
 ---
 
 ## 👥 Team
-Chung Ka Shing HKBU
-
+**DareToHack** @ BUHack 2026  
+Chung Ka Shing — HKBU
 
 ---
 
