@@ -1,110 +1,197 @@
-# 🎓 HKBU BuddyUp
+# 🎓 BuddyUp — HKBU Campus Companion
 
-> A campus social app built for HKBU students — find study partners, discover events, and actually enjoy uni life.
+> **Connect. Study. Belong.**  
+> A smart campus social platform built for HKBU students — find compatible study partners, discover events, chat in real time, and get instant answers about campus life from an AI assistant.
 
-Built at **Dare to Hack 2026** by a team of HKBU students who were tired of feeling lost on campus and wanted to do something about it.
+Built at **Dare to Hack 2026** by a team of HKBU students.
 
----
-
-## What is this?
-
-BuddyUp is a web app that helps HKBU students connect with each other based on real compatibility — not just who happens to sit next to you in lecture. You fill out your profile once (interests, study style, personality, faculty, goals), and the app quietly does the work of finding people you'd actually get along with.
-
-On top of matching, there's a shared events board, a real-time chat, a social feed, and an AI assistant that knows HKBU campus life inside out.
+🌐 **Live app:** [https://daretohack.web.app](https://daretohack.web.app)
 
 ---
 
-## Features
+## 🔍 Problem Statement
+
+Starting university — especially in a new city or country — can be isolating. Students at HKBU often struggle to:
+
+- Find study partners with compatible schedules and working styles
+- Discover what's happening on campus beyond official announcements
+- Connect with peers who share the same interests and goals
+- Get quick answers about campus facilities, admin processes, and services
+
+Existing solutions (WhatsApp group chats, notice boards, Facebook groups) are fragmented, noisy, and rely entirely on luck. There is no structured way for students to find *the right* people.
+
+**BuddyUp solves this** by combining a data-driven compatibility engine, real-time messaging, a social feed, campus event discovery, and an AI chatbot — all in one app built specifically for the HKBU community.
+
+---
+
+## ✨ Key Features
 
 ### 🤝 Smart Buddy Matching
-Fill in your profile and get ranked matches with other students. The algorithm scores compatibility across six dimensions — shared interests, study style, personality type, buddy goals, location preference, and faculty. Each match card shows a breakdown so you can see exactly *why* someone is a good fit, then jump straight into a chat with them.
+Fill in your profile once and get ranked compatibility matches with other students. The algorithm scores across four weighted dimensions — **interests (35%), personality (25%), buddy goals (20%), and study style (20%)** — using cosine vector similarity and a collaborative-filtering re-ranker. Each match card shows a transparent breakdown so you can see exactly *why* someone is a good fit, then jump straight into a chat.
 
-### 💬 Real-time Chat
-One-on-one messaging with your matches. Messages sync instantly via Firebase, and unread counts are tracked per conversation so nothing slips through the cracks.
+### 💬 Real-time 1-on-1 Chat
+Direct messaging with your matches, powered by Firestore. Messages sync instantly, and unread counts are tracked per conversation.
 
 ### 📬 Inbox
-See all your active conversations in one place. Unread badges, latest message previews, and quick access to jump back into any chat.
+All active conversations in one place — unread badges, latest message previews, and one-tap access to jump back into any chat.
 
 ### 🎉 Campus Events
-Two tabs — official HKBU events (scraped automatically from the university website) and student-created events. Any logged-in student can post their own event with a title, date, time, location, and emoji. RSVP tracking is built in. Event creators can edit or delete their own posts.
+Two tabs: **Official** HKBU events (auto-scraped from the university website via a Python script) and **Student-created** events. Any logged-in student can post an event with a title, date, time, location, and emoji. RSVP tracking is built in; event creators can edit or delete their own posts.
 
-### 📰 Social Feed
-A simple community board where students can share updates, tips, or just say hi. Think of it as a lightweight campus notice board.
+### 📰 Social Feed & Communities
+A Reddit-style community board for sharing updates, tips, and questions. Supports post tags (Study, Event, Housing, Food, etc.), upvotes/downvotes, comments, and sortable feeds. Community rooms give student groups their own dedicated space.
 
 ### 🤖 HKBUChat AI Assistant
-A floating chat widget powered by the HKBU GenAI Platform (GPT-4.1). It knows about campus facilities, canteens, the library, health centre, counselling services, course registration, exam schedules — the things you'd normally have to hunt down yourself.
+A full-page AI chat interface (plus a floating widget) powered by the **HKBU GenAI Platform (GPT-4.1)**. Pre-trained context covers campus facilities, canteens, the library, health centre, counselling, course registration, exam schedules — the things you'd normally spend 20 minutes hunting for.
 
 ### 👤 Profile & Settings
-Upload a profile photo, set your nickname, pick your interests, describe your study habits, and configure what kind of buddy you're looking for. Everything feeds into the match algorithm.
+Upload a profile photo (Firebase Storage), set a nickname, pick interests, describe study habits, configure personality traits via sliders, and set buddy preferences. Everything feeds into the match algorithm. Supports **light / dark mode** with persistent user preference.
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
-| Layer | What we used |
+| Layer | Technology |
 |---|---|
 | Frontend | React 18 + TypeScript + Vite |
 | Routing | React Router v6 |
-| Backend / DB | Firebase (Auth, Firestore, Storage) |
-| AI Chatbot | HKBU GenAI Platform (GPT-4.1) |
-| Event Scraping | Python (`scripts/scrape_events.py`) |
-| Styling | CSS Modules |
+| Auth | Firebase Authentication (email/password) |
+| Database | Firebase Firestore (real-time) |
+| File Storage | Firebase Storage (profile photos) |
+| Hosting | Firebase Hosting |
+| AI Chatbot | HKBU GenAI Platform — GPT-4.1 |
+| Event Scraping | Python 3 (`requests` + `beautifulsoup4` + `firebase-admin`) |
+| Styling | CSS Modules (dark/light theme via CSS custom properties) |
+| Backend Functions | Cloudflare Worker (`cf-worker/`) · Firebase Functions (`functions/`) |
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-hkbu-web/
-├── src/
-│   ├── components/      # Sidebar, AppLayout, ChatBot, AvatarUpload
-│   ├── pages/           # One file per route (Match, Events, Feed, Chat…)
-│   ├── config/          # Firebase setup
-│   ├── utils/           # Match scoring algorithm
-│   └── types/           # Shared TypeScript types
-scripts/
-└── scrape_events.py     # Pulls official HKBU events into Firestore
+BUHACK-DareToHack/
+├── hkbu-web/                  # Main frontend application
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── firebase.json          # Firebase Hosting config
+│   ├── .firebaserc            # Firebase project aliases
+│   └── src/
+│       ├── App.tsx            # Root router + auth guard + theme toggle
+│       ├── index.css          # Global CSS custom properties (light/dark)
+│       ├── components/
+│       │   ├── AppLayout.tsx       # Sidebar shell wrapping all protected routes
+│       │   ├── Sidebar.tsx         # Navigation sidebar
+│       │   ├── HKBUChatBot.tsx     # Floating + sidebar AI chat widget
+│       │   └── AvatarUpload.tsx    # Profile photo uploader
+│       ├── pages/
+│       │   ├── WelcomePage.tsx     # Landing / onboarding splash
+│       │   ├── SignUpPage.tsx      # Multi-step sign-up wizard
+│       │   ├── LoginPage.tsx       # Email/password login
+│       │   ├── MainPage.tsx        # Home dashboard
+│       │   ├── MatchPage.tsx       # Buddy matching results
+│       │   ├── EventsPage.tsx      # Campus events (official + student)
+│       │   ├── FeedPage.tsx        # Social feed + community browser
+│       │   ├── CommunityRoomPage.tsx # Per-community discussion room
+│       │   ├── InboxPage.tsx       # Conversations list
+│       │   ├── ChatPage.tsx        # 1-on-1 real-time chat
+│       │   ├── AIChatPage.tsx      # Full-page AI assistant
+│       │   ├── ProfilePage.tsx     # View / edit profile
+│       │   └── SettingsPage.tsx    # App settings
+│       ├── config/
+│       │   └── firebaseConfig.ts   # Firebase initialisation
+│       ├── utils/
+│       │   └── matchAlgorithm.ts   # Cosine similarity + CF re-ranker
+│       └── types/
+│           └── index.ts            # Shared TypeScript interfaces
+│
+├── scripts/
+│   └── scrape_events.py       # Scrapes HKBU website → writes to Firestore
+│
+├── functions/
+│   └── index.js               # Firebase Cloud Functions
+│
+└── cf-worker/
+    └── index.js               # Cloudflare Worker (AI proxy)
 ```
 
 ---
 
-## Getting Started
+## 🚀 Setup & Run Instructions
 
 ### Prerequisites
-- Node.js 18+
-- A Firebase project with Auth, Firestore, and Storage enabled
-- An HKBU GenAI Platform API key (for the chatbot)
 
-### Setup
+- **Node.js** 18+ and **npm**
+- **Python** 3.9+ (for event scraping only)
+- A **Firebase project** with the following enabled:
+  - Authentication (Email/Password provider)
+  - Firestore Database
+  - Storage
+- An **HKBU GenAI Platform** API key (for the AI chatbot)
+
+---
+
+### 1. Clone the repository
 
 ```bash
-# 1. Install dependencies
-cd hkbu-web
+git clone https://github.com/your-org/BUHACK-DareToHack.git
+cd BUHACK-DareToHack/hkbu-web
+```
+
+### 2. Install dependencies
+
+```bash
 npm install
+```
 
-# 2. Create your environment file
+### 3. Configure environment variables
+
+Create a `.env` file in `hkbu-web/`:
+
+```bash
 cp .env.example .env
-# Then fill in your Firebase and HKBU GenAI keys
-
-# 3. Start the dev server
-npm run dev
 ```
 
-### Environment Variables
+Then fill in your values:
 
-```
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
+```env
+# Firebase
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 
-VITE_HKBU_GENAI_API_KEY=...
+# HKBU GenAI Platform
+VITE_HKBU_GENAI_API_KEY=your_genai_key
 VITE_HKBU_GENAI_MODEL=gpt-4.1
 ```
 
-### Scraping Official Events
+### 4. Start the development server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+### 5. Build for production
+
+```bash
+npm run build
+```
+
+### 6. Deploy to Firebase Hosting
+
+```bash
+npm run deploy
+```
+
+This runs `tsc && vite build` then deploys the `dist/` folder to Firebase Hosting automatically.
+
+---
+
+### (Optional) Scrape Official HKBU Events
 
 ```bash
 cd scripts
@@ -112,24 +199,33 @@ pip install firebase-admin requests beautifulsoup4
 python scrape_events.py
 ```
 
-This pulls events from the HKBU website and writes them into the `events` Firestore collection with `source: "official"`.
+This pulls events from the HKBU website and writes them into the `events` Firestore collection with `source: "official"`. Place your Firebase service account key at `scripts/serviceAccountKey.json` before running.
 
 ---
 
-## How the Match Algorithm Works
+## 🧠 How the Match Algorithm Works
 
-Each user profile has fields for interests, study styles, personality tags, buddy goals, preferred location, and faculty. When you open the Match page, the app fetches all other user profiles and scores each one against yours using weighted partial matching across those six dimensions. The scores are combined into a single percentage and users are sorted highest-to-lowest.
+Each user profile stores: interests, study styles, buddy goals, and four personality sliders (introvert–extrovert, planned–spontaneous, deep talks–small talk, optimistic–realistic).
 
-The breakdown is shown on each match card so it never feels like a black box.
+When you open the Match page the app:
+
+1. **Fetches all other user profiles** from Firestore.
+2. **Computes a content-based score** per candidate using weighted cosine similarity across the four dimensions (interests 35%, personality 25%, buddy goals 20%, study style 20%).
+3. **Applies a must-have multiplier** (±40%) if the user specified hard requirements like "same faculty" or "shared hobbies".
+4. **Builds a full feature matrix** (all users × all dimensions) and computes a **collaborative-filtering score** — finding users whose overall feature vector is nearest to yours in the full space.
+5. **Blends** content score (70%) and CF score (30%), then **min-max normalises** the final scores so the output always spans [0 → 1].
+6. Filters out matches below 30% and **sorts highest-to-lowest**.
+
+The score breakdown is shown on every match card so it never feels like a black box.
 
 ---
 
-## Team
+## 👥 Team
+Chung Ka Shing HKBU
 
-Made with way too much caffeine during Dare to Hack 2026 at HKBU. 🧃
 
 ---
 
-## License
+## 📄 License
 
 MIT
