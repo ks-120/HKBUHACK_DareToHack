@@ -223,6 +223,10 @@ The score breakdown is shown on every match card so it never feels like a black 
 ## 👥 Team
 **DareToHack** @ BUHack 2026  
 Chung Ka Shing — HKBU
+Wong Tsin Tsin — HKBU
+Ma Hiu Kei — HKBU
+Ng Yat Long — HKBU
+Chan Tung Shing — HKBU
 
 ---
 
