@@ -13,9 +13,9 @@ Built at **BUHack 2026** by team **DareToHack**.
 
 ### The Challenge: Making Friends on a Commuter Campus
 
-University should be a time of building lifelong friendships — but at HKBU, it often isn't. Most students arrive for lectures and leave right after, leaving little room for spontaneous social connections. Freshmen face a blank social slate and even current students may see their circles narrow as classmates graduate or group project ends.
+Social connection is a cornerstone of **digital wellbeing** — yet at HKBU, the commuter-campus lifestyle actively works against it. Most students arrive for lectures and leave right after, leaving little room for spontaneous social connections. The result is chronic social isolation, elevated stress, and diminished motivation — all of which directly undermine both **wellbeing and academic productivity**. Freshmen face a blank social slate and even current students may see their circles narrow as classmates graduate or group projects end.
 
-Through direct conversations with HKBU students we identified **four recurring pain points**:
+Through direct conversations with HKBU students we identified **four recurring pain points** that erode digital wellbeing and productivity:
 
 ---
 
@@ -56,23 +56,23 @@ Common practical questions — such as health centre locations, GPA calculation 
 | **Physical notice boards** | Low reach, no interactivity, no follow-up mechanism. |
 | **Lectures/Group project** | Academic only; no social, personality, or interest matching. |
 
-**The core gap:** there is no single platform built for HKBU students that combines structured peer matching, real-time communication, social feeds, event discovery, community spaces, and AI-powered campus assistance — all while letting students stay anonymous until they're ready.
+**The core gap:** there is no single platform built for HKBU students that safeguards their **digital wellbeing** — reducing social anxiety and hurdles — while boosting **productivity** through structured peer matching, real-time communication, social feeds, event discovery, community spaces, and AI-powered campus assistance, all while letting students stay anonymous until they're ready.
 
 ---
 
 ### How BuddyUp Solves This
 
-BuddyUp is a purpose-built campus companion for HKBU that addresses each identified pain point within one integrated web application, gated by `@life.hkbu.edu.hk` email verification to ensure a students-only environment:
+BuddyUp is a purpose-built campus companion for HKBU that **enhances digital wellbeing and productivity** by addressing each identified pain point within one integrated web application, gated by `@life.hkbu.edu.hk` email verification to ensure a safe, students-only environment:
 
 | Pain Point | BuddyUp Feature |
 |---|---|
-| No structured peer matching | **Smart Buddy Matching** — a multi-dimensional algorithm scores compatibility across interests (35%), personality (25%), buddy goals (20%), and study style (20%) using cosine vector similarity, a must-have multiplier, and a collaborative-filtering re-ranker. Each match card displays a transparent score breakdown. |
+| No structured peer matching | **Smart Buddy Matching** — a multi-dimensional algorithm scores compatibility across interests (35%), personality (25%), buddy goals (20%), and study style (20%) using cosine vector similarity, a must-have multiplier, and a collaborative-filtering re-ranker. Each match card displays a transparent score breakdown. **Real-time 1-on-1 Chat & Inbox** — Direct messaging with instant sync, unread counts, and message previews, accessible directly from any match card. |
 | Fragmented event information | **Campus Events** — official HKBU events are auto-scraped from the Student Affairs website; students can also create, edit, and RSVP to their own events with date, time, location, and emoji. |
 | Siloed communities | **Community Rooms** — browsable, joinable topic-based forumpost with nickname-based identity so students can participate without exposing personal contact details. |
 | Campus knowledge friction | **HKBUChat AI Assistant** — a GPT-4.1-powered chatbot embedded in the app as both a full-page view and a floating widget, providing instant answers without requiring students to leave the platform. |
-| No unified messaging | **Real-time 1-on-1 Chat & Inbox** — Direct messaging with instant sync, unread counts, and message previews, accessible directly from any match card. |
 
-By consolidating these capabilities into a single, HKBU-exclusive platform with a comprehensive onboarding profile wizard, BuddyUp transforms the campus social experience from fragmented and chance-dependent to **structured, data-informed, and inclusive**.
+
+By consolidating these capabilities into a single, HKBU-exclusive platform with a comprehensive onboarding profile wizard, BuddyUp transforms the campus social experience from fragmented and chance-dependent to **structured, data-informed, and inclusive** — directly advancing **digital wellbeing** (lower social anxiety, stronger sense of belonging) and **productivity** (faster access to study partners, events, and campus knowledge without context-switching across multiple tools).
 
 ## ✨ Key Features
 
