@@ -11,18 +11,68 @@ Built at **BUHack 2026** by team **DareToHack**.
 
 ## 🔍 Problem Statement
 
-Starting university — especially in a new city or country — can be isolating. Students at HKBU often struggle to:
+### The Challenge: Making Friends on a Commuter Campus
 
-- Find study partners with compatible schedules and working styles
-- Discover what's happening on campus beyond official announcements
-- Connect with peers who share the same interests and goals
-- Get quick answers about campus facilities, admin processes, and services
+University should be a time of building lifelong friendships — but at HKBU, it often isn't. Most students arrive for lectures and leave right after, leaving little room for spontaneous social connections. Freshmen face a blank social slate and even current students may see their circles narrow as classmates graduate or group project ends.
 
-Existing solutions (WhatsApp group chats, notice boards, Facebook groups) are fragmented, noisy, and rely entirely on luck. There is no structured way for students to find *the right* people.
-
-**BuddyUp solves this** by combining a data-driven compatibility engine, real-time messaging, a social feed, campus event discovery, and an AI chatbot — all in one app built specifically for the HKBU community.
+Through direct conversations with HKBU students we identified **four recurring pain points**:
 
 ---
+
+### 1. No Structured Way to Find Compatible Peers
+
+Students want study partners, hangout friends, and activity buddies currently rely on chance encounters in lectures or shared spaces.
+
+Additionally, **initiating contact with an unfamiliar classmate carries a social cost**. Many students are reluctant to approach someone they have never spoken to — the uncertainty of not knowing whether the other person shares similar interests or availability makes the interaction feel uncomfortable. As a result, many potential connections simply never happen.
+
+
+### 2. Fragmented & Noisy Information Channels
+
+Campus life information is scattered across the official HKBU website, the Student Affairs portal, departmental emails, WhatsApp groups, Instagram pages, and physical notice boards. Students routinely miss events they would have loved to attend simply because they didn't check the right channel at the right time.
+
+Student-organised events — study sessions, social gatherings, sports activities — are particularly difficult to discover, as they are typically shared only within private group chats that are inaccessible to newcomers.
+
+
+### 3. No Platform for Students to Form Their Own Communities
+
+Students at HKBU have diverse interests and studytyles but there is no dedicated platform where they can **create and grow their own communities** around these shared values.
+
+Students also tends to make friends within their major or only if they have common friends, which makes them difficult to explore new communities.
+
+
+### 4. Campus Knowledge Is Buried & Hard to Access
+
+Common practical questions — such as health centre locations, GPA calculation methods, canteen hours, or course registration procedures — often require navigating multiple pages across the HKBU website. It is also annoying for them to search for the website anytime they want to check any new campus events.
+
+---
+
+### Why Existing Solutions Fall Short
+
+| Solution | Limitation |
+|---|---|
+| **WhatsApp groups** | Invite-only and too official, requires sharing your phone number with strangers, and initial social cost.|
+| **Instagram** | Replys on pushes of instagram post and feeds. No friend matching function and HKBU verification of approachers. |
+| **Official HKBU website** | Comprehensive but static; no peer interaction, no student-created content, no real-time chat. |
+| **Physical notice boards** | Low reach, no interactivity, no follow-up mechanism. |
+| **Lectures/Group project** | Academic only; no social, personality, or interest matching. |
+
+**The core gap:** there is no single platform built for HKBU students that combines structured peer matching, real-time communication, social feeds, event discovery, community spaces, and AI-powered campus assistance — all while letting students stay anonymous until they're ready.
+
+---
+
+### How BuddyUp Solves This
+
+BuddyUp is a purpose-built campus companion for HKBU that addresses each identified pain point within one integrated web application, gated by `@life.hkbu.edu.hk` email verification to ensure a students-only environment:
+
+| Pain Point | BuddyUp Feature |
+|---|---|
+| No structured peer matching | **Smart Buddy Matching** — a multi-dimensional algorithm scores compatibility across interests (35%), personality (25%), buddy goals (20%), and study style (20%) using cosine vector similarity, a must-have multiplier, and a collaborative-filtering re-ranker. Each match card displays a transparent score breakdown. |
+| Fragmented event information | **Campus Events** — official HKBU events are auto-scraped from the Student Affairs website; students can also create, edit, and RSVP to their own events with date, time, location, and emoji. |
+| Siloed communities | **Community Rooms** — browsable, joinable topic-based forumpost with nickname-based identity so students can participate without exposing personal contact details. |
+| Campus knowledge friction | **HKBUChat AI Assistant** — a GPT-4.1-powered chatbot embedded in the app as both a full-page view and a floating widget, providing instant answers without requiring students to leave the platform. |
+| No unified messaging | **Real-time 1-on-1 Chat & Inbox** — Direct messaging with instant sync, unread counts, and message previews, accessible directly from any match card. |
+
+By consolidating these capabilities into a single, HKBU-exclusive platform with a comprehensive onboarding profile wizard, BuddyUp transforms the campus social experience from fragmented and chance-dependent to **structured, data-informed, and inclusive**.
 
 ## ✨ Key Features
 
