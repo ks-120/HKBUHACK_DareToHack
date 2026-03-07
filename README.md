@@ -133,7 +133,7 @@ BUHACK-DareToHack/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-org/BUHACK-DareToHack.git
+git clone https://github.com/ks-120/HKBUHACK_DareToHack.git
 cd BUHACK-DareToHack/hkbu-web
 ```
 
@@ -143,7 +143,26 @@ cd BUHACK-DareToHack/hkbu-web
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. API Setup
+
+#### 🔥 Firebase
+1. Go to [https://console.firebase.google.com](https://console.firebase.google.com) and create a new project
+2. Enable **Authentication** → Sign-in method → **Email/Password**
+3. Enable **Firestore Database** → Start in production mode
+4. Enable **Storage** → Start in production mode
+5. Go to **Project Settings** → **Your Apps** → click **Web app** (`</>`)
+6. Register the app and copy the config values — you will need:
+   - `apiKey`, `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, `appId`, `measurementId`
+
+#### 🤖 HKBU GenAI Platform
+1. Go to [https://genai.hkbu.edu.hk](https://genai.hkbu.edu.hk) and log in with your HKBU account
+2. Navigate to **API Keys** and generate a new key
+3. Copy the key — this is your `VITE_HKBU_GENAI_API_KEY`
+4. Recommended model: `gpt-4.1`
+
+---
+
+### 4. Configure environment variables
 
 Create a `.env` file in `hkbu-web/`:
 
@@ -154,20 +173,21 @@ cp .env.example .env
 Then fill in your values:
 
 ```env
-# Firebase
+# Firebase (from Firebase Console → Project Settings → Your Apps)
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-# HKBU GenAI Platform
+# HKBU GenAI Platform (from https://genai.hkbu.edu.hk)
 VITE_HKBU_GENAI_API_KEY=your_genai_key
 VITE_HKBU_GENAI_MODEL=gpt-4.1
 ```
 
-### 4. Start the development server
+### 5. Start the development server
 
 ```bash
 npm run dev
@@ -175,13 +195,13 @@ npm run dev
 
 The app will be available at `http://localhost:5173`.
 
-### 5. Build for production
+### 6. Build for production
 
 ```bash
 npm run build
 ```
 
-### 6. Deploy to Firebase Hosting
+### 7. Deploy to Firebase Hosting
 
 ```bash
 npm run deploy
@@ -193,13 +213,17 @@ This runs `tsc && vite build` then deploys the `dist/` folder to Firebase Hostin
 
 ### (Optional) Scrape Official HKBU Events
 
+1. Go to [Firebase Console](https://console.firebase.google.com) → **Project Settings** → **Service accounts** → **Generate new private key**
+2. Save the downloaded JSON file as `scripts/serviceAccountKey.json`
+3. Run the scraper:
+
 ```bash
 cd scripts
-pip install firebase-admin requests beautifulsoup4
+pip install -r requirements.txt
 python scrape_events.py
 ```
 
-This pulls events from the HKBU website and writes them into the `events` Firestore collection with `source: "official"`. Place your Firebase service account key at `scripts/serviceAccountKey.json` before running.
+This pulls events from the HKBU website and writes them into the `events` Firestore collection with `source: "official"`.
 
 ---
 
