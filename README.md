@@ -1,4 +1,4 @@
-# 🎓 BuddyUp — HKBU Campus Companion
+# 🎓 BUBuddy — HKBU Campus Companion
 
 > **Connect. Study. Belong.**  
 > A smart campus social platform built for HKBU students — find compatible study partners, discover events, chat in real time, and get instant answers about campus life from an AI assistant.
